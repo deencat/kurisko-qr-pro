@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import type { KuriskoChartCandle, KuriskoSnapshot, KuriskoSymbolLevels } from "@/lib/kurisko/snapshot/types";
 import { QrProMiniChart } from "./QrProMiniChart";
 import { QR_SYMBOL_META } from "./theme";
@@ -34,8 +35,14 @@ interface Props {
 export function QrProLiveCharts({ snapshots, levels }: Props) {
   const [tf, setTf] = useState<ChartTf>("1m");
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [portalReady, setPortalReady] = useState(false);
+
+  useEffect(() => setPortalReady(true), []);
 
   const levelMap = useMemo(() => new Map(levels.map((l) => [l.symbol, l])), [levels]);
+  const expandedSnapshot = expanded
+    ? snapshots.find((snapshot) => snapshot.symbol === expanded) ?? null
+    : null;
 
   const chartSnapshots = LIVE_CHART_SYMBOLS.map(
     (sym) => snapshots.find((s) => s.symbol === sym) ?? null
@@ -74,7 +81,10 @@ export function QrProLiveCharts({ snapshots, levels }: Props) {
                 <span className="text-[10px] font-black text-white">{meta?.qrAlias ?? s.symbol}</span>
                 <button
                   type="button"
-                  onClick={() => setExpanded(s.symbol)}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setExpanded(s.symbol);
+                  }}
                   className="rounded border border-slate-600 px-1.5 py-0.5 text-[7px] font-bold text-slate-400 hover:text-white"
                 >
                   EXPAND
@@ -84,50 +94,60 @@ export function QrProLiveCharts({ snapshots, levels }: Props) {
                 bars={bars}
                 keyLevels={s.keyLevels}
                 pivot={symLevels?.pivot ?? null}
-                height={140}
+                showTimeScale
+                height={156}
               />
             </div>
           );
         })}
       </div>
 
-      {expanded ? (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
-          onClick={() => setExpanded(null)}
-          onKeyDown={() => {}}
-          role="presentation"
-        >
-          <div
-            className="w-full max-w-4xl rounded border border-slate-600 bg-[#0a1628] p-4"
-            onClick={(e) => e.stopPropagation()}
-            onKeyDown={() => {}}
-            role="presentation"
-          >
-            {(() => {
-              const s = snapshots.find((x) => x.symbol === expanded);
-              if (!s) return null;
-              const symLevels = levelMap.get(s.symbol);
-              const bars =
-                tf === "1m" ? s.chartBars : aggregateBars(s.chartBars ?? [], TF_MS[tf]);
-              return (
-                <>
-                  <p className="mb-2 text-sm font-black text-white">
-                    {QR_SYMBOL_META[s.symbol]?.qrAlias ?? s.symbol} · {tf}
+      {portalReady && expandedSnapshot
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 p-4"
+              onClick={() => setExpanded(null)}
+              onKeyDown={(event) => {
+                if (event.key === "Escape") setExpanded(null);
+              }}
+              role="dialog"
+              aria-modal="true"
+              aria-label={`${expandedSnapshot.symbol} chart`}
+            >
+              <div
+                className="w-full max-w-4xl rounded border border-slate-600 bg-[#0a1628] p-4"
+                onClick={(event) => event.stopPropagation()}
+                onKeyDown={() => {}}
+                role="presentation"
+              >
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <p className="text-sm font-black text-white">
+                    {QR_SYMBOL_META[expandedSnapshot.symbol]?.qrAlias ?? expandedSnapshot.symbol} · {tf}
                   </p>
-                  <QrProMiniChart
-                    bars={bars}
-                    keyLevels={s.keyLevels}
-                    pivot={symLevels?.pivot ?? null}
-                    showTimeScale
-                    height={360}
-                  />
-                </>
-              );
-            })()}
-          </div>
-        </div>
-      ) : null}
+                  <button
+                    type="button"
+                    onClick={() => setExpanded(null)}
+                    className="rounded border border-slate-600 px-2 py-1 text-[10px] font-bold text-slate-300 hover:text-white"
+                  >
+                    Close
+                  </button>
+                </div>
+                <QrProMiniChart
+                  bars={
+                    tf === "1m"
+                      ? expandedSnapshot.chartBars
+                      : aggregateBars(expandedSnapshot.chartBars ?? [], TF_MS[tf])
+                  }
+                  keyLevels={expandedSnapshot.keyLevels}
+                  pivot={levelMap.get(expandedSnapshot.symbol)?.pivot ?? null}
+                  showTimeScale
+                  height={380}
+                />
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
     </div>
   );
 }

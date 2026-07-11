@@ -6,9 +6,19 @@ import { isScanInProgress } from "./scan-store";
 const DEFAULT_INTERVAL_MS = 60_000;
 const LEVELS_EVERY_N_TICKS = 5;
 
-let started = false;
-let tickCount = 0;
-let timer: ReturnType<typeof setInterval> | null = null;
+const SCHEDULER_KEY = "__kuriskoScanScheduler";
+
+interface SchedulerState {
+  started: boolean;
+  tickCount: number;
+  timer: ReturnType<typeof setInterval> | null;
+}
+
+function getSchedulerState(): SchedulerState {
+  const root = globalThis as typeof globalThis & { [SCHEDULER_KEY]?: SchedulerState };
+  root[SCHEDULER_KEY] ??= { started: false, tickCount: 0, timer: null };
+  return root[SCHEDULER_KEY]!;
+}
 
 function scanIntervalMs(): number {
   const raw = process.env.KURISKO_SCAN_INTERVAL_MS;
@@ -26,11 +36,16 @@ function scanEnabled(): boolean {
 async function runTick(): Promise<void> {
   if (isScanInProgress()) return;
 
-  tickCount += 1;
-  const includeLevels = tickCount === 1 || tickCount % LEVELS_EVERY_N_TICKS === 0;
+  const scheduler = getSchedulerState();
+  scheduler.tickCount += 1;
+  const includeLevels =
+    scheduler.tickCount === 1 || scheduler.tickCount % LEVELS_EVERY_N_TICKS === 0;
 
   try {
-    await runKuriskoScan({ includeWidgets: true, includeLevels });
+    const result = await runKuriskoScan({ includeWidgets: true, includeLevels });
+    console.info(
+      `[kurisko-scan] tick ${scheduler.tickCount} completed (${result.results.length} symbols)`
+    );
   } catch (error) {
     console.error("[kurisko-scan] scheduled tick failed:", error);
   }
@@ -38,19 +53,21 @@ async function runTick(): Promise<void> {
 
 /** Start a single in-process scan loop. Safe to call once per Node process. */
 export function startKuriskoScanScheduler(): void {
-  if (started || !scanEnabled()) return;
-  started = true;
+  const scheduler = getSchedulerState();
+  if (scheduler.started || !scanEnabled()) return;
+  scheduler.started = true;
 
   const intervalMs = scanIntervalMs();
   console.info(`[kurisko-scan] scheduler started (interval=${intervalMs}ms)`);
 
   void runTick();
-  timer = setInterval(() => void runTick(), intervalMs);
-  timer.unref?.();
+  scheduler.timer = setInterval(() => void runTick(), intervalMs);
+  scheduler.timer.unref?.();
 }
 
 export function stopKuriskoScanScheduler(): void {
-  if (timer) clearInterval(timer);
-  timer = null;
-  started = false;
+  const scheduler = getSchedulerState();
+  if (scheduler.timer) clearInterval(scheduler.timer);
+  scheduler.timer = null;
+  scheduler.started = false;
 }

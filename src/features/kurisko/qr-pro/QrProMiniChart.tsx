@@ -31,10 +31,10 @@ export function QrProMiniChart({
 
     const chart = createChart(ref.current, {
       height,
-      layout: { background: { color: "#0a1628" }, textColor: "#64748b" },
+      layout: { background: { color: "#0a1628" }, textColor: "#94a3b8" },
       grid: { vertLines: { visible: false }, horzLines: { color: "#1e293b33" } },
-      rightPriceScale: { borderVisible: false, scaleMargins: { top: 0.1, bottom: 0.1 } },
-      timeScale: { borderVisible: false, visible: showTimeScale, timeVisible: showTimeScale },
+      rightPriceScale: { borderVisible: false, scaleMargins: { top: 0.08, bottom: 0.08 } },
+      timeScale: { borderVisible: false, visible: false, timeVisible: false, secondsVisible: false },
       crosshair: { vertLine: { visible: false }, horzLine: { visible: false } },
       handleScroll: false,
       handleScale: false,
@@ -64,6 +64,17 @@ export function QrProMiniChart({
       levelRefs.current = [];
     };
   }, [height]);
+
+  useEffect(() => {
+    chartRef.current?.applyOptions({
+      timeScale: {
+        borderVisible: false,
+        visible: showTimeScale,
+        timeVisible: showTimeScale,
+        secondsVisible: false,
+      },
+    });
+  }, [showTimeScale]);
 
   useEffect(() => {
     const chart = chartRef.current;

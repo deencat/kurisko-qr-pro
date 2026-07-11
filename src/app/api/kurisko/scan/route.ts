@@ -48,9 +48,13 @@ export async function GET() {
   const feed = getKuriskoScanFeed();
 
   if (!feed.results.length && !feed.scanning) {
+    void runKuriskoScan({ includeWidgets: true, includeLevels: true }).catch((error) => {
+      console.error("[kurisko-scan] bootstrap scan failed:", error);
+    });
+
     return NextResponse.json(
       {
-        ...feed,
+        ...getKuriskoScanFeed(),
         message: "Scan warming up — server scheduler will populate results shortly.",
         defaultSymbols: KURISKO_DEFAULT_SCAN_SYMBOLS,
       },

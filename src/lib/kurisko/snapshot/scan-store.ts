@@ -18,26 +18,38 @@ interface ScanStoreState {
   lastCompletedAt: number | null;
 }
 
-const state: ScanStoreState = {
-  scan: null,
-  matrices: {},
-  levels: null,
-  gapScan: null,
-  premarket: null,
-  scanning: false,
-  lastCompletedAt: null,
-};
+const STORE_KEY = "__kuriskoScanStore";
+
+function createEmptyState(): ScanStoreState {
+  return {
+    scan: null,
+    matrices: {},
+    levels: null,
+    gapScan: null,
+    premarket: null,
+    scanning: false,
+    lastCompletedAt: null,
+  };
+}
+
+/** Shared across instrumentation + route bundles in standalone builds. */
+function getState(): ScanStoreState {
+  const root = globalThis as typeof globalThis & { [STORE_KEY]?: ScanStoreState };
+  root[STORE_KEY] ??= createEmptyState();
+  return root[STORE_KEY]!;
+}
 
 const DEFAULT_STALE_MS = 90_000;
 
 export function setScanInProgress(scanning: boolean): void {
-  state.scanning = scanning;
+  getState().scanning = scanning;
 }
 
 export function setCachedScan(
   scan: KuriskoScanResult,
   matrices: Record<string, KuriskoMatrix | null>
 ): void {
+  const state = getState();
   state.scan = scan;
   state.matrices = matrices;
   state.lastCompletedAt = Date.now();
@@ -45,34 +57,35 @@ export function setCachedScan(
 }
 
 export function setCachedLevels(levels: KuriskoLevelsResponse): void {
-  state.levels = levels;
+  getState().levels = levels;
 }
 
 export function setCachedGapScan(result: AzizSipScanResult): void {
-  state.gapScan = result;
+  getState().gapScan = result;
 }
 
 export function setCachedPremarket(result: AzizSipScanResult): void {
-  state.premarket = result;
+  getState().premarket = result;
 }
 
 export function getCachedMatrix(symbol: string): KuriskoMatrix | null {
-  return state.matrices[symbol.toUpperCase()] ?? null;
+  return getState().matrices[symbol.toUpperCase()] ?? null;
 }
 
 export function getCachedLevels(): KuriskoLevelsResponse | null {
-  return state.levels;
+  return getState().levels;
 }
 
 export function getCachedGapScan(): AzizSipScanResult | null {
-  return state.gapScan;
+  return getState().gapScan;
 }
 
 export function getCachedPremarket(): AzizSipScanResult | null {
-  return state.premarket;
+  return getState().premarket;
 }
 
 export function getKuriskoScanFeed(staleMs = DEFAULT_STALE_MS): KuriskoScanFeed {
+  const state = getState();
   const scannedAt = state.scan?.scannedAt ?? state.lastCompletedAt ?? 0;
   const stale = !state.scan || Date.now() - scannedAt > staleMs;
 
@@ -90,5 +103,5 @@ export function getKuriskoScanFeed(staleMs = DEFAULT_STALE_MS): KuriskoScanFeed 
 }
 
 export function isScanInProgress(): boolean {
-  return state.scanning;
+  return getState().scanning;
 }
