@@ -1,8 +1,28 @@
 import { NextResponse } from "next/server";
 import { scanAzizSipCapital } from "@/lib/aziz/scan/capital-sip-scanner";
+import { isAuthorizedCronRequest } from "@/lib/kurisko/snapshot/cron-auth";
+import { getCachedGapScan } from "@/lib/kurisko/snapshot/scan-store";
 
-/** Gap scanner — Capital gainers + SIP scoring (proxied for QR Pro public route). */
+/** Read-only cached gap scan — no Capital.com calls from clients. */
+export async function GET() {
+  const cached = getCachedGapScan();
+  if (cached) return NextResponse.json(cached);
+
+  return NextResponse.json(
+    { error: "Gap scan warming up — wait for the server scheduler." },
+    { status: 503 }
+  );
+}
+
+/** Manual/cron trigger only. */
 export async function POST(request: Request) {
+  if (!isAuthorizedCronRequest(request)) {
+    return NextResponse.json(
+      { error: "Gap scan is server-side only. Use GET to read cached data." },
+      { status: 403 }
+    );
+  }
+
   try {
     const body = await request.json().catch(() => ({}));
     const maxSymbols = body.maxSymbols != null ? Number(body.maxSymbols) : 12;
@@ -25,11 +45,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-}
-
-export async function GET() {
-  return NextResponse.json({
-    description: "QR Pro gap scanner — POST { maxSymbols?: 12 }",
-    universe: "capital_gainers",
-  });
 }

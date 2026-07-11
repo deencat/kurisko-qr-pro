@@ -16,12 +16,35 @@ interface Props {
   buyCount: number;
   sellCount: number;
   loading: boolean;
+  scannedAt?: number | null;
+  scanning?: boolean;
+  stale?: boolean;
   audioEnabled: boolean;
   onAudioToggle: () => void;
   onRefresh: () => void;
 }
 
-export function QrProHeader({ buyCount, sellCount, loading, audioEnabled, onAudioToggle, onRefresh }: Props) {
+function formatScannedAt(ts: number): string {
+  return new Date(ts).toLocaleString([], {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+}
+
+export function QrProHeader({
+  buyCount,
+  sellCount,
+  loading,
+  scannedAt,
+  scanning = false,
+  stale = false,
+  audioEnabled,
+  onAudioToggle,
+  onRefresh,
+}: Props) {
   const [clock, setClock] = useState("");
 
   useEffect(() => {
@@ -57,6 +80,16 @@ export function QrProHeader({ buyCount, sellCount, loading, audioEnabled, onAudi
         <div className="flex items-center gap-3">
           <span className="text-sm font-bold text-emerald-400">{buyCount} BUY</span>
           <span className="text-sm font-bold text-rose-400">{sellCount} SELL</span>
+          <span
+            className={`font-mono text-[10px] ${stale ? "text-amber-400" : scanning ? "text-cyan-400" : "text-slate-400"}`}
+            title={scannedAt ? formatScannedAt(scannedAt) : undefined}
+          >
+            {scanning
+              ? "Server scanning…"
+              : scannedAt
+                ? `Last scanned ${formatScannedAt(scannedAt)}`
+                : "Waiting for server scan"}
+          </span>
           <span className="font-mono text-xs text-slate-400">{clock}</span>
           <button
             type="button"
@@ -82,7 +115,9 @@ export function QrProHeader({ buyCount, sellCount, loading, audioEnabled, onAudi
           </button>
         </div>
       </div>
-      <p className="mt-1 text-[9px] text-slate-600">Capital.com demo · Kurisko K1 quad rotation · auto-refresh 60s</p>
+      <p className="mt-1 text-[9px] text-slate-600">
+        Capital.com demo · Kurisko K1 quad rotation · server scan every 60s · clients read cached feed
+      </p>
     </header>
   );
 }

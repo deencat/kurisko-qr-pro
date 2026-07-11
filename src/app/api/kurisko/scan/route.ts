@@ -1,59 +1,40 @@
 import { NextResponse } from "next/server";
-import {
-  buildKuriskoSnapshot,
-  KURISKO_DEFAULT_SCAN_SYMBOLS,
-} from "@/lib/kurisko/snapshot/build-snapshot";
-import { countBuySell, getKuriskoAlerts, recordSnapshotTransition } from "@/lib/kurisko/snapshot/alert-store";
-import type { KuriskoScanResult } from "@/lib/kurisko/snapshot/types";
+import { isAuthorizedCronRequest } from "@/lib/kurisko/snapshot/cron-auth";
+import { KURISKO_DEFAULT_SCAN_SYMBOLS } from "@/lib/kurisko/snapshot/build-snapshot";
+import { runKuriskoScan } from "@/lib/kurisko/snapshot/run-scheduled-scan";
+import { getKuriskoScanFeed } from "@/lib/kurisko/snapshot/scan-store";
 
-const SCAN_SYMBOL_DELAY_MS = 1200;
-
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
+/** Manual/cron trigger only — clients must use GET for cached results. */
 export async function POST(request: Request) {
+  if (!isAuthorizedCronRequest(request)) {
+    return NextResponse.json(
+      {
+        error:
+          "Scan triggers are server-side only. Use GET /api/kurisko/scan to read the latest cached scan.",
+      },
+      { status: 403 }
+    );
+  }
+
   try {
     const body = await request.json().catch(() => ({}));
     const timeframePairId = body.timeframePairId as string | undefined;
-    const symbols: string[] =
+    const symbols: string[] | undefined =
       body.symbols != null
         ? String(body.symbols)
             .split(",")
             .map((s: string) => s.trim().toUpperCase())
             .filter(Boolean)
-        : [...KURISKO_DEFAULT_SCAN_SYMBOLS];
+        : undefined;
 
-    const results = [];
-    const errors: { symbol: string; error: string }[] = [];
-
-    for (let i = 0; i < symbols.length; i++) {
-      const symbol = symbols[i]!;
-      if (i > 0) await sleep(SCAN_SYMBOL_DELAY_MS);
-      try {
-        const snapshot = await buildKuriskoSnapshot({ symbol, timeframePairId });
-        recordSnapshotTransition(snapshot);
-        results.push(snapshot);
-      } catch (e) {
-        errors.push({
-          symbol,
-          error: e instanceof Error ? e.message : "Snapshot failed",
-        });
-      }
-    }
-
-    const { buyCount, sellCount } = countBuySell(results);
-
-    const payload: KuriskoScanResult = {
-      scannedAt: Date.now(),
+    const result = await runKuriskoScan({
       symbols,
-      results,
-      buyCount,
-      sellCount,
-      ...(errors.length ? { errors } : {}),
-    };
+      timeframePairId,
+      includeWidgets: body.includeWidgets !== false,
+      includeLevels: body.includeLevels === true,
+    });
 
-    return NextResponse.json(payload);
+    return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Kurisko scan failed" },
@@ -62,12 +43,20 @@ export async function POST(request: Request) {
   }
 }
 
+/** Read-only feed for all connected clients — no Capital.com calls. */
 export async function GET() {
-  const alerts = getKuriskoAlerts(5);
-  return NextResponse.json({
-    description:
-      "Kurisko QR Pro scanner — POST { symbols?: 'US500,US100,GOLD,BTCUSD,US30', timeframePairId?: '1m+5m' }",
-    defaultSymbols: KURISKO_DEFAULT_SCAN_SYMBOLS,
-    recentAlerts: alerts.length,
-  });
+  const feed = getKuriskoScanFeed();
+
+  if (!feed.results.length && !feed.scanning) {
+    return NextResponse.json(
+      {
+        ...feed,
+        message: "Scan warming up — server scheduler will populate results shortly.",
+        defaultSymbols: KURISKO_DEFAULT_SCAN_SYMBOLS,
+      },
+      { status: 202 }
+    );
+  }
+
+  return NextResponse.json(feed);
 }
