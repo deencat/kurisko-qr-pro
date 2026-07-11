@@ -1,8 +1,8 @@
 "use client";
 
-import type { KuriskoMatrix } from "@/lib/kurisko/snapshot/types";
+import type { KuriskoK1Stage, KuriskoMatrix, KuriskoMatrixRow } from "@/lib/kurisko/snapshot/types";
 import { QrProDepthBars } from "./QrProDepthBars";
-import { QR_SYMBOLS, QR_SYMBOL_META } from "./theme";
+import { QR_SYMBOLS, QR_SYMBOL_META, STAGE_BADGE, stageBadgeLabel } from "./theme";
 
 interface Props {
   matrices: Record<string, KuriskoMatrix | null>;
@@ -11,9 +11,77 @@ interface Props {
 
 const TIMEFRAMES = ["1m", "3m", "5m"] as const;
 
-export function QrProSignalMatrix({ matrices, loading }: Props) {
-  const symbols = QR_SYMBOLS.filter((s) => matrices[s]);
+function timeAgo(ts: number): string {
+  const sec = Math.floor((Date.now() - ts) / 1000);
+  if (sec < 60) return `${sec}s ago`;
+  if (sec < 3600) return `${Math.floor(sec / 60)}m ago`;
+  return `${Math.floor(sec / 3600)}h ago`;
+}
 
+function stageTopBadge(stage: KuriskoK1Stage, side: "long" | "short", tf: string): string {
+  if (stage === "WATCHING") return "— WATCHING —";
+  return stageBadgeLabel(stage, side, tf);
+}
+
+function depthBadgeClass(depth: number): string {
+  if (depth >= 40) return "bg-rose-600/30 text-rose-300";
+  return "bg-slate-600/40 text-slate-300";
+}
+
+function MatrixCell({ row, scannedAt }: { row: KuriskoMatrixRow | null; scannedAt?: number }) {
+  if (!row) {
+    return (
+      <div className="flex min-h-[148px] flex-col rounded border border-dashed border-slate-800 bg-[#0d1b2a]/50 px-2 py-2">
+        <span className="mx-auto rounded border border-slate-500 bg-white px-2 py-0.5 text-[9px] font-semibold text-slate-600">
+          — WATCHING —
+        </span>
+        <p className="mt-auto text-center text-[9px] text-slate-600">No data</p>
+      </div>
+    );
+  }
+
+  const bull = row.bias === "BULL";
+  const depth = row.depths.deepestDepth;
+  const ts = row.barTs || scannedAt || Date.now();
+
+  return (
+    <div className="flex min-h-[148px] flex-col rounded border border-slate-800 bg-[#0d1b2a] px-2 py-2">
+      <span
+        className={`mx-auto rounded border px-2 py-0.5 text-[9px] font-bold uppercase leading-tight ${
+          row.stage === "WATCHING"
+            ? "border-slate-400 bg-white text-slate-700"
+            : `border-transparent ${STAGE_BADGE[row.stage]}`
+        }`}
+      >
+        {stageTopBadge(row.stage, row.side, row.timeframe)}
+      </span>
+
+      <div className="mt-2 flex-1">
+        <QrProDepthBars depths={row.depths} side={row.side} thick />
+      </div>
+
+      <div className="mt-2 flex items-center justify-between gap-1">
+        <div className="flex flex-wrap gap-1">
+          <span
+            className={`rounded px-1.5 py-0.5 text-[8px] font-black ${
+              bull ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-400"
+            }`}
+          >
+            {bull ? "▲ BULL" : "▼ BEAR"}
+          </span>
+          {depth > 0 ? (
+            <span className={`rounded px-1.5 py-0.5 text-[8px] font-black ${depthBadgeClass(depth)}`}>
+              DEPTH {depth}
+            </span>
+          ) : null}
+        </div>
+        <span className="shrink-0 text-[8px] text-slate-500">{timeAgo(ts)}</span>
+      </div>
+    </div>
+  );
+}
+
+export function QrProSignalMatrix({ matrices, loading }: Props) {
   return (
     <section className="overflow-hidden rounded border border-slate-700/80 bg-[#0a1628]">
       <div className="border-b border-slate-700 bg-[#0d1b2a] px-3 py-2">
@@ -22,62 +90,48 @@ export function QrProSignalMatrix({ matrices, loading }: Props) {
         </h2>
       </div>
 
-      {loading && symbols.length === 0 ? (
+      {loading && Object.keys(matrices).length === 0 ? (
         <p className="p-4 text-xs text-slate-500">Building matrix…</p>
       ) : null}
 
-      <div className="divide-y divide-slate-800">
-        {TIMEFRAMES.map((tf) => (
-          <div key={tf} className="px-2 py-2">
-            <p className="mb-2 text-[10px] font-black uppercase text-slate-400">{tf}</p>
-            <div className="space-y-2">
-              {symbols.map((sym) => {
-                const matrix = matrices[sym];
-                const row = matrix?.rows.find((r) => r.timeframe === tf);
-                const meta = QR_SYMBOL_META[sym];
-                const alias = meta?.qrAlias ?? sym;
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[720px] border-collapse text-left">
+          <thead>
+            <tr className="border-b border-slate-700 bg-[#0d1b2a] text-[9px] font-black uppercase tracking-wide text-slate-400">
+              <th className="px-3 py-2 text-left">Instrument</th>
+              {TIMEFRAMES.map((tf) => (
+                <th key={tf} className="px-2 py-2 text-center">
+                  {tf}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-800">
+            {QR_SYMBOLS.map((sym) => {
+              const matrix = matrices[sym];
+              const meta = QR_SYMBOL_META[sym];
+              const alias = meta?.qrAlias ?? sym;
+              const name = meta?.name ?? sym;
 
-                if (!row || row.stage === "WATCHING") {
-                  return (
-                    <div
-                      key={`${tf}-${sym}`}
-                      className="flex items-center gap-3 rounded border border-dashed border-slate-800 px-3 py-2"
-                    >
-                      <span className="w-8 text-xs font-black text-slate-500">{alias}</span>
-                      <span className="flex-1 text-center text-[10px] text-slate-600">— WATCHING —</span>
-                    </div>
-                  );
-                }
-
-                const depth = row.depths.deepestDepth;
-                const bull = row.bias === "BULL";
-
-                return (
-                  <div key={`${tf}-${sym}`} className="rounded border border-slate-800 bg-[#0d1b2a] px-2 py-2">
-                    <div className="mb-1.5 flex items-center justify-between gap-2">
-                      <span className="text-xs font-black text-white">{alias}</span>
-                      <div className="flex gap-1">
-                        <span
-                          className={`rounded px-1.5 py-0.5 text-[8px] font-black ${
-                            bull ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-400"
-                          }`}
-                        >
-                          {bull ? "▲ BULL" : "▼ BEAR"}
-                        </span>
-                        {depth > 0 ? (
-                          <span className="rounded bg-rose-600/30 px-1.5 py-0.5 text-[8px] font-black text-rose-300">
-                            DEPTH {depth}
-                          </span>
-                        ) : null}
-                      </div>
-                    </div>
-                    <QrProDepthBars depths={row.depths} side={row.side} thick />
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ))}
+              return (
+                <tr key={sym} className="bg-[#0a1628]">
+                  <td className="px-3 py-3 align-top">
+                    <p className="text-sm font-black text-white">{alias}</p>
+                    <p className="text-[9px] text-slate-500">{name}</p>
+                  </td>
+                  {TIMEFRAMES.map((tf) => {
+                    const row = matrix?.rows.find((r) => r.timeframe === tf) ?? null;
+                    return (
+                      <td key={`${sym}-${tf}`} className="px-2 py-2 align-top">
+                        <MatrixCell row={row} scannedAt={matrix?.scannedAt} />
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </section>
   );
