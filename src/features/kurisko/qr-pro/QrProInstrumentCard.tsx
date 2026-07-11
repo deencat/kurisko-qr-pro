@@ -96,9 +96,9 @@ export function QrProInstrumentCard({ snapshot, matrix, selected, onSelect }: Pr
         ))}
       </div>
 
-      <div className="relative bg-[#0a1628] px-2 py-2">
+      <div className="bg-[#0a1628] px-2 py-2">
         <QrProDepthBars depths={snapshot.depthExec} side={snapshot.side} />
-        <p className="absolute bottom-1.5 right-2 font-mono text-xs font-bold text-slate-100">
+        <p className="mt-1.5 border-t border-slate-800/60 pt-1.5 text-right font-mono text-xs font-bold text-slate-100">
           {formatQrPrice(snapshot.price)}
         </p>
       </div>
