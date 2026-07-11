@@ -121,6 +121,9 @@ export function KuriskoScannerPage() {
         buyCount={scan?.buyCount ?? 0}
         sellCount={scan?.sellCount ?? 0}
         loading={loading || Boolean(scan?.scanning)}
+        scannedAt={scan?.scannedAt}
+        scanning={scan?.scanning}
+        stale={scan?.stale}
         audioEnabled={audioEnabled}
         onAudioToggle={() => setAudioEnabled((v) => !v)}
         onRefresh={() => void loadScanFeed()}
