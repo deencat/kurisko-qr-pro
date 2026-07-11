@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+:root {
+  --background: #020617;
+  --foreground: #f8fafc;
+  --card: #0f172a;
+  --accent: #22d3ee;
+  --muted: #64748b;
+  --success: #34d399;
+  --danger: #f87171;
+}
+
+body {
+  background: radial-gradient(circle at top, #0f172a 0%, #020617 55%);
+  color: var(--foreground);
+}
+
+.card {
+  @apply rounded-xl border border-slate-800 bg-slate-900/70 p-6 shadow-lg backdrop-blur;
+}
+
+.badge {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+}
+
+.badge-success {
+  @apply bg-emerald-500/15 text-emerald-300;
+}
+
+.badge-warning {
+  @apply bg-amber-500/15 text-amber-300;
+}
+
+.badge-danger {
+  @apply bg-rose-500/15 text-rose-300;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition;
+}
+
+.btn-primary {
+  @apply bg-cyan-500 text-slate-950 hover:bg-cyan-400;
+}
+
+.btn-secondary {
+  @apply border border-slate-700 bg-slate-800 hover:bg-slate-700;
+}
+
+.input {
+  @apply w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm outline-none focus:border-cyan-500;
+}
