@@ -48,11 +48,7 @@ export function QrProPreMarket() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/kurisko/premarket", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ maxSymbols: 6 }),
-      });
+      const res = await fetch("/api/kurisko/premarket");
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Pre-market scan failed");
       setResult(data as AzizSipScanResult);

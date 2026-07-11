@@ -148,6 +148,14 @@ export interface KuriskoScanResult {
   errors?: { symbol: string; error: string }[];
 }
 
+/** Server-cached scan feed returned by GET /api/kurisko/scan. */
+export interface KuriskoScanFeed extends KuriskoScanResult {
+  matrices: Record<string, KuriskoMatrix | null>;
+  scanning: boolean;
+  stale: boolean;
+  message?: string;
+}
+
 export interface KuriskoMatrixRow {
   timeframe: "1m" | "3m" | "5m";
   side: "long" | "short";
