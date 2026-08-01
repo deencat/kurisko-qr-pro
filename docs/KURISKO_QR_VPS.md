@@ -2,6 +2,8 @@
 
 Deploy the **slim app** on your VPS so TradingView webhooks arrive in **milliseconds**, not via a 5–15s poll from your laptop.
 
+**See also:** [Data persistence & replay design](./KURISKO_DATA_PERSISTENCE.md) · [Project plan](./PROJECT_PLAN.md)
+
 ## Why VPS beats local + bridge
 
 | Setup | TV alert latency | Complexity |
@@ -11,6 +13,8 @@ Deploy the **slim app** on your VPS so TradingView webhooks arrive in **millisec
 | Local + ngrok tunnel | ~instant while tunnel up | Fragile (URL changes, PC must stay on) |
 
 ## Architecture on VPS
+
+### Live path (today)
 
 ```
 ┌─────────────────┐     HTTPS POST      ┌──────────────────────────────┐
@@ -22,14 +26,34 @@ Deploy the **slim app** on your VPS so TradingView webhooks arrive in **millisec
 ┌─────────────────┐     REST            │  │ 60s poll │ │ Alerts    │ │
 │  Capital.com    │ ◄────────────────── │  │ Capital  │ │ K1 + TV   │ │
 │  demo API       │                     │  └──────────┘ └───────────┘ │
-└─────────────────┘                     └──────────────────────────────┘
-         ▲                                         │
-         │                                         ▼
-         │                              https://your-domain/day-trade/qr-scanner
-         │                              (you open in browser from anywhere)
+└─────────────────┘                     │         in-memory cache      │
+                                        └──────────────────────────────┘
+                                                    │
+                                                    ▼
+                              https://your-domain/day-trade/qr-scanner
 ```
 
 **No bridge service needed** when the whole scanner runs on the VPS.
+
+### Target path (persistence — planned)
+
+See [KURISKO_DATA_PERSISTENCE.md](./KURISKO_DATA_PERSISTENCE.md) for full design.
+
+```
+Capital.com ◄── delta backfill ──► SQLite (./data/kurisko.db)
+                                        │
+                    ┌───────────────────┤
+                    ▼                   ▼
+              live scan           GET /api/kurisko/history/*
+              (hot cache)         replay snapshots & candles
+```
+
+Docker volume (planned):
+
+```yaml
+volumes:
+  - ./data:/app/data
+```
 
 ## How to create the slim repo
 
@@ -99,7 +123,7 @@ https://qr.yourdomain.com/api/kurisko/tradingview-webhook?secret=YOUR_SECRET
 | Lighter.xyz integration | Kurisko VPS uses Capital only |
 | METS backtest / paper / live | Not QR scanner |
 | Aziz S1–S9 day-trade UI | Not Kurisko |
-| Prisma / database | Scanner uses in-memory alerts |
+| Prisma / database (METS) | Replaced by planned SQLite candle/snapshot store — see [data design](./KURISKO_DATA_PERSISTENCE.md) |
 | Research / astro-bazi | Unrelated |
 | Worker / cron / self-improve | Unrelated |
 | Portfolio / walk-forward | Unrelated |
@@ -138,6 +162,22 @@ rsync -av ../METS-v1/src/features/kurisko/ ./src/features/kurisko/
 rsync -av ../METS-v1/src/app/api/kurisko/ ./src/app/api/kurisko/
 ```
 
+## Data directory & backup (planned)
+
+When persistence is enabled (`KURISKO_DATA_ENABLED=true`):
+
+```bash
+mkdir -p data
+# docker-compose mounts ./data → /app/data
+```
+
+**Backup:** stop the container, copy `data/kurisko.db` (checkpoint WAL first if using WAL mode).  
+**Restore:** replace the file and restart; delta backfill fills any gap since backup.
+
+**Status check (planned):** `GET /api/kurisko/history/status`
+
 ## Next implementation step
 
-Add `POST /api/kurisko/tradingview-webhook` to the slim app (included in METS-v1 PR path; run export after merge).
+Follow [PROJECT_PLAN.md](./PROJECT_PLAN.md) **Phase 1**: SQLite candle store + incremental backfill.
+
+Completed: TradingView webhook (`POST /api/kurisko/tradingview-webhook`).

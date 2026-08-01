@@ -3,12 +3,13 @@ import "server-only";
 import type { CandleResolution, LighterCandle } from "@/lib/lighter/client";
 import {
   fetchAllCapitalCandles,
-  fetchCapitalCandlesDelta,
   isCapitalConfigured,
 } from "@/lib/capital/client";
-import { capitalBarMs } from "@/lib/capital/resolutions";
 import type { CapitalVolumeMode } from "@/lib/capital/volume";
 import { ensureCapitalVolumes } from "@/lib/capital/volume";
+import { detectHistoryShortfall } from "@/lib/kurisko/data/backfill-service";
+import { getCandleRange, upsertCandles } from "@/lib/kurisko/data/candle-store";
+import { isKuriskoDataEnabled } from "@/lib/kurisko/data/config";
 
 export type AzizDataSource = "capital";
 
@@ -26,6 +27,7 @@ export interface AzizMarketData {
   dataSource: AzizDataSource;
   epic?: string;
   volumeMode?: CapitalVolumeMode;
+  fromLocalStore?: boolean;
 }
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -54,18 +56,42 @@ function azizMinBarsForHistory(requestedDays: number, resolution: CandleResoluti
   return azizFetchDaysForHistory(requestedDays, resolution) * barsPerDay(resolution);
 }
 
-function mergeCandlesByTime(a: LighterCandle[], b: LighterCandle[]): LighterCandle[] {
-  const m = new Map<number, LighterCandle>();
-  for (const c of a) m.set(c.t, c);
-  for (const c of b) m.set(c.t, c);
-  return [...m.values()].sort((x, y) => x.t - y.t);
-}
-
 function calendarDaysFromCandles(candles: LighterCandle[]): number {
   const firstTs = candles[0]?.t;
   const lastTs = candles[candles.length - 1]?.t;
   if (!firstTs || !lastTs) return 0;
   return Math.max(1, Math.round((lastTs - firstTs) / MS_PER_DAY));
+}
+
+function buildMarketDataPayload(params: {
+  symbol: string;
+  resolution: CandleResolution;
+  startTs: number;
+  endTs: number;
+  candles: LighterCandle[];
+  requestedDays: number;
+  fetchDays: number;
+  epic?: string;
+  volumeMode?: CapitalVolumeMode;
+  fromLocalStore?: boolean;
+}): AzizMarketData {
+  const calendarDaysCovered = calendarDaysFromCandles(params.candles);
+  return {
+    symbol: params.symbol,
+    resolution: params.resolution,
+    startTs: params.startTs,
+    endTs: params.endTs,
+    candles: params.candles,
+    requestedDays: params.requestedDays,
+    fetchDays: params.fetchDays,
+    calendarDaysCovered,
+    historyShortfall: params.requestedDays > calendarDaysCovered + 5,
+    cacheBars: params.candles.length,
+    dataSource: "capital",
+    epic: params.epic,
+    volumeMode: params.volumeMode,
+    fromLocalStore: params.fromLocalStore,
+  };
 }
 
 export async function loadAzizMarketData(params: {
@@ -87,6 +113,28 @@ export async function loadAzizMarketData(params: {
     return cached;
   }
 
+  if (isKuriskoDataEnabled()) {
+    const localCandles = getCandleRange(params.symbol, params.resolution, startTs, endTs);
+    const shortfall = detectHistoryShortfall(params.symbol, params.resolution, days, endTs);
+
+    if (localCandles.length >= Math.min(minBars, 200) && !shortfall) {
+      const normalized = ensureCapitalVolumes(localCandles);
+      const data = buildMarketDataPayload({
+        symbol: params.symbol,
+        resolution: params.resolution,
+        startTs,
+        endTs,
+        candles: normalized.candles,
+        requestedDays: days,
+        fetchDays,
+        volumeMode: normalized.volumeMode,
+        fromLocalStore: true,
+      });
+      sessionCache.set(key, data);
+      return data;
+    }
+  }
+
   if (!isCapitalConfigured()) {
     throw new Error("Capital.com not configured. Set CAPITAL_API_KEY, CAPITAL_IDENTIFIER, CAPITAL_API_PASSWORD.");
   }
@@ -101,9 +149,12 @@ export async function loadAzizMarketData(params: {
 
   const candles = full.candles.filter((c) => c.t >= startTs && c.t <= endTs);
   const normalized = ensureCapitalVolumes(candles);
-  const calendarDaysCovered = calendarDaysFromCandles(candles);
 
-  const data: AzizMarketData = {
+  if (isKuriskoDataEnabled() && normalized.candles.length) {
+    upsertCandles(params.symbol, params.resolution, normalized.candles);
+  }
+
+  const data = buildMarketDataPayload({
     symbol: params.symbol,
     resolution: params.resolution,
     startTs,
@@ -111,13 +162,10 @@ export async function loadAzizMarketData(params: {
     candles: normalized.candles,
     requestedDays: days,
     fetchDays,
-    calendarDaysCovered,
-    historyShortfall: days > calendarDaysCovered + 5,
-    cacheBars: null,
-    dataSource: "capital",
     epic: full.epic,
     volumeMode: normalized.volumeMode,
-  };
+    fromLocalStore: false,
+  });
   sessionCache.set(key, data);
   return data;
 }

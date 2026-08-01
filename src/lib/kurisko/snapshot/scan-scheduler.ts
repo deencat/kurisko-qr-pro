@@ -2,6 +2,7 @@ import "server-only";
 
 import { runKuriskoScan } from "./run-scheduled-scan";
 import { isScanInProgress } from "./scan-store";
+import { maybeRunRetention } from "@/lib/kurisko/data/retention-service";
 
 const DEFAULT_INTERVAL_MS = 60_000;
 const LEVELS_EVERY_N_TICKS = 5;
@@ -46,6 +47,7 @@ async function runTick(): Promise<void> {
     console.info(
       `[kurisko-scan] tick ${scheduler.tickCount} completed (${result.results.length} symbols)`
     );
+    maybeRunRetention();
   } catch (error) {
     console.error("[kurisko-scan] scheduled tick failed:", error);
   }

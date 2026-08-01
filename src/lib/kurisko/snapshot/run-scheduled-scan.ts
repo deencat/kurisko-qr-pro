@@ -8,6 +8,9 @@ import {
   KURISKO_DEFAULT_SCAN_SYMBOLS,
 } from "./build-snapshot";
 import { countBuySell, recordSnapshotTransition } from "./alert-store";
+import { snapshotPersistEnabled } from "@/lib/kurisko/data/config";
+import { runTickCandleBackfill } from "@/lib/kurisko/data/hydrate";
+import { saveScanRun } from "@/lib/kurisko/data/snapshot-store";
 import {
   setCachedGapScan,
   setCachedLevels,
@@ -77,6 +80,20 @@ export async function runKuriskoScan(options: RunKuriskoScanOptions = {}): Promi
     };
 
     setCachedScan(payload, matrices);
+
+    if (snapshotPersistEnabled()) {
+      try {
+        saveScanRun(payload, matrices);
+      } catch (error) {
+        console.error("[kurisko-data] snapshot persist failed:", error);
+      }
+    }
+
+    try {
+      await runTickCandleBackfill();
+    } catch (error) {
+      console.error("[kurisko-data] tick candle backfill failed:", error);
+    }
 
     if (includeLevels) {
       try {

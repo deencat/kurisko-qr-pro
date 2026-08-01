@@ -1,5 +1,6 @@
 import "server-only";
 
+import { persistAlert } from "@/lib/kurisko/data/alert-store-persist";
 import { stageRank } from "./k1-stage";
 import { quadSnippet } from "./quad-depth";
 import type { KuriskoAlert, KuriskoK1Stage, KuriskoSnapshot } from "./types";
@@ -58,6 +59,7 @@ export function recordSnapshotTransition(snapshot: KuriskoSnapshot): KuriskoAler
 
   alerts.unshift(alert);
   if (alerts.length > MAX_ALERTS) alerts.length = MAX_ALERTS;
+  persistAlert(alert);
   return alert;
 }
 
@@ -91,7 +93,25 @@ export function recordTradingViewAlert(params: {
   };
   alerts.unshift(alert);
   if (alerts.length > MAX_ALERTS) alerts.length = MAX_ALERTS;
+  persistAlert(alert);
   return alert;
+}
+
+/** Restore in-memory alert ring from SQLite on startup. */
+export function hydrateAlertsFromDb(stored: KuriskoAlert[]): void {
+  alerts.length = 0;
+  lastBySymbol.clear();
+  const sorted = [...stored].sort((a, b) => b.ts - a.ts);
+  for (const alert of sorted.slice(0, MAX_ALERTS)) {
+    alerts.push(alert);
+    if (!lastBySymbol.has(alert.symbol)) {
+      lastBySymbol.set(alert.symbol, {
+        stage: alert.toStage,
+        side: alert.side,
+        ts: alert.ts,
+      });
+    }
+  }
 }
 
 export function countBuySell(snapshots: KuriskoSnapshot[]): { buyCount: number; sellCount: number } {

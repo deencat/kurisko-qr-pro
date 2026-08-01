@@ -1,6 +1,7 @@
 node_modules
 .next
-data/
+# SQLite persistence volume at repo root only (not src/lib/kurisko/data/)
+/data/
 prisma/data/
 *.db
 *.db-journal

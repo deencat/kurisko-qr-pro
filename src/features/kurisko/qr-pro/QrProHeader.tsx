@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Bell, Loader2, Radio, RefreshCw, Volume2, VolumeX } from "lucide-react";
+import { Bell, ChevronLeft, ChevronRight, History, Loader2, Radio, RefreshCw, Volume2, VolumeX } from "lucide-react";
 import { playTestAlert } from "./useKuriskoAudioAlerts";
 
 const FLOW = [
@@ -12,6 +12,8 @@ const FLOW = [
   { n: 5, label: "SIGNAL", color: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40" },
 ];
 
+export type QrProViewMode = "live" | "replay";
+
 interface Props {
   buyCount: number;
   sellCount: number;
@@ -20,8 +22,15 @@ interface Props {
   scanning?: boolean;
   stale?: boolean;
   audioEnabled: boolean;
+  mode: QrProViewMode;
+  replayAt: string;
+  canReplayStep?: boolean;
   onAudioToggle: () => void;
   onRefresh: () => void;
+  onModeChange: (mode: QrProViewMode) => void;
+  onReplayAtChange: (value: string) => void;
+  onLoadReplay: () => void;
+  onReplayStep: (direction: "prev" | "next") => void;
 }
 
 function formatScannedAt(ts: number): string {
@@ -34,6 +43,12 @@ function formatScannedAt(ts: number): string {
   });
 }
 
+function toDatetimeLocalValue(ts: number): string {
+  const d = new Date(ts);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 export function QrProHeader({
   buyCount,
   sellCount,
@@ -42,8 +57,15 @@ export function QrProHeader({
   scanning = false,
   stale = false,
   audioEnabled,
+  mode,
+  replayAt,
+  canReplayStep = false,
   onAudioToggle,
   onRefresh,
+  onModeChange,
+  onReplayAtChange,
+  onLoadReplay,
+  onReplayStep,
 }: Props) {
   const [clock, setClock] = useState("");
 
@@ -54,15 +76,44 @@ export function QrProHeader({
     return () => window.clearInterval(id);
   }, []);
 
+  useEffect(() => {
+    if (mode === "replay" && scannedAt && !replayAt) {
+      onReplayAtChange(toDatetimeLocalValue(scannedAt));
+    }
+  }, [mode, scannedAt, replayAt, onReplayAtChange]);
+
   return (
     <header className="border-b border-slate-800 bg-[#060d18] px-3 py-2">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-4">
           <h1 className="text-lg font-black tracking-tight text-white">QR PRO SCANNER</h1>
-          <span className="inline-flex items-center gap-1 rounded border border-emerald-500/50 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
-            <Radio className="h-3 w-3" />
-            LIVE
-          </span>
+          {mode === "live" ? (
+            <span className="inline-flex items-center gap-1 rounded border border-emerald-500/50 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
+              <Radio className="h-3 w-3" />
+              LIVE
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 rounded border border-violet-500/50 bg-violet-500/10 px-2 py-0.5 text-[10px] font-bold text-violet-300">
+              <History className="h-3 w-3" />
+              REPLAY
+            </span>
+          )}
+          <div className="flex rounded border border-slate-700 text-[10px]">
+            <button
+              type="button"
+              onClick={() => onModeChange("live")}
+              className={`px-2 py-0.5 font-bold ${mode === "live" ? "bg-cyan-700 text-white" : "text-slate-400"}`}
+            >
+              Live
+            </button>
+            <button
+              type="button"
+              onClick={() => onModeChange("replay")}
+              className={`px-2 py-0.5 font-bold ${mode === "replay" ? "bg-violet-700 text-white" : "text-slate-400"}`}
+            >
+              Replay
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 text-[10px]">
@@ -77,18 +128,22 @@ export function QrProHeader({
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <span className="text-sm font-bold text-emerald-400">{buyCount} BUY</span>
           <span className="text-sm font-bold text-rose-400">{sellCount} SELL</span>
           <span
-            className={`font-mono text-[10px] ${stale ? "text-amber-400" : scanning ? "text-cyan-400" : "text-slate-400"}`}
+            className={`font-mono text-[10px] ${stale ? "text-amber-400" : scanning ? "text-cyan-400" : mode === "replay" ? "text-violet-300" : "text-slate-400"}`}
             title={scannedAt ? formatScannedAt(scannedAt) : undefined}
           >
-            {scanning
-              ? "Server scanning…"
-              : scannedAt
-                ? `Last scanned ${formatScannedAt(scannedAt)}`
-                : "Waiting for server scan"}
+            {mode === "replay"
+              ? scannedAt
+                ? `Replay ${formatScannedAt(scannedAt)}`
+                : "Pick a time"
+              : scanning
+                ? "Server scanning…"
+                : scannedAt
+                  ? `Last scanned ${formatScannedAt(scannedAt)}`
+                  : "Waiting for server scan"}
           </span>
           <span className="font-mono text-xs text-slate-400">{clock}</span>
           <button
@@ -104,19 +159,60 @@ export function QrProHeader({
             {audioEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
           </button>
           <Bell className="h-4 w-4 text-slate-500" aria-hidden />
-          <button
-            type="button"
-            onClick={onRefresh}
-            disabled={loading}
-            className="rounded border border-slate-600 bg-slate-800 px-2 py-1 text-[10px] text-slate-300 hover:bg-slate-700"
-          >
-            {loading ? <Loader2 className="inline h-3 w-3 animate-spin" /> : <RefreshCw className="inline h-3 w-3" />}
-            <span className="ml-1">Scan</span>
-          </button>
+          {mode === "live" ? (
+            <button
+              type="button"
+              onClick={onRefresh}
+              disabled={loading}
+              className="rounded border border-slate-600 bg-slate-800 px-2 py-1 text-[10px] text-slate-300 hover:bg-slate-700"
+            >
+              {loading ? <Loader2 className="inline h-3 w-3 animate-spin" /> : <RefreshCw className="inline h-3 w-3" />}
+              <span className="ml-1">Scan</span>
+            </button>
+          ) : (
+            <div className="flex items-center gap-1">
+              <input
+                type="datetime-local"
+                value={replayAt}
+                onChange={(e) => onReplayAtChange(e.target.value)}
+                className="rounded border border-slate-600 bg-slate-900 px-1 py-0.5 text-[10px] text-slate-200"
+              />
+              <button
+                type="button"
+                onClick={onLoadReplay}
+                disabled={loading || !replayAt}
+                className="rounded border border-violet-600 bg-violet-900/40 px-2 py-1 text-[10px] text-violet-200 hover:bg-violet-800/40"
+              >
+                Load
+              </button>
+              {canReplayStep ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => onReplayStep("prev")}
+                    className="rounded border border-slate-600 p-1 text-slate-300 hover:bg-slate-800"
+                    title="Previous scan"
+                  >
+                    <ChevronLeft className="h-3 w-3" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onReplayStep("next")}
+                    className="rounded border border-slate-600 p-1 text-slate-300 hover:bg-slate-800"
+                    title="Next scan"
+                  >
+                    <ChevronRight className="h-3 w-3" />
+                  </button>
+                </>
+              ) : null}
+            </div>
+          )}
         </div>
       </div>
       <p className="mt-1 text-[9px] text-slate-600">
-        Capital.com demo · Kurisko K1 quad rotation · server scan every 60s · clients read cached feed
+        {mode === "live"
+          ? "Capital.com demo · Kurisko K1 quad rotation · server scan every 60s · clients read cached feed"
+          : "Replay mode · reading persisted snapshots from SQLite · no live Capital calls"}
       </p>
     </header>
   );

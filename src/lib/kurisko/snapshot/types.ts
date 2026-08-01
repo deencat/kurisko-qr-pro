@@ -154,6 +154,8 @@ export interface KuriskoScanFeed extends KuriskoScanResult {
   scanning: boolean;
   stale: boolean;
   message?: string;
+  replayMode?: "live" | "snapshot";
+  scanRunId?: string;
 }
 
 export interface KuriskoMatrixRow {
