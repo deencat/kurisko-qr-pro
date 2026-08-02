@@ -9,3 +9,4 @@ prisma/data/
 .env.local
 *.log
 .DS_Store
+scripts/dux/.venv/

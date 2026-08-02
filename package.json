@@ -6,7 +6,11 @@
     "dev": "bash scripts/dev.sh",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "dux:fixtures": "tsx scripts/dux/generate-fixtures.ts && tsx scripts/dux/import-fixtures.ts",
+    "dux:status": "tsx scripts/dux/store-status.ts",
+    "dux:test": "tsx scripts/dux/phase1-selftest.ts",
+    "dux:ingest": "scripts/dux/.venv/bin/python scripts/dux/ingest_futu_history.py"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.12.0",
@@ -30,6 +34,7 @@
     "@types/react-dom": "^19.1.5",
     "eslint": "^9.28.0",
     "eslint-config-next": "^15.3.3",
+    "tsx": "^4.23.1",
     "typescript": "^5.8.3"
   }
 }

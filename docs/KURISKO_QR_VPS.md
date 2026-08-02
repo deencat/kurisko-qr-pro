@@ -35,7 +35,7 @@ Deploy the **slim app** on your VPS so TradingView webhooks arrive in **millisec
 
 **No bridge service needed** when the whole scanner runs on the VPS.
 
-### Target path (persistence — planned)
+### Persistence path (implemented)
 
 See [KURISKO_DATA_PERSISTENCE.md](./KURISKO_DATA_PERSISTENCE.md) for full design.
 
@@ -48,7 +48,7 @@ Capital.com ◄── delta backfill ──► SQLite (./data/kurisko.db)
               (hot cache)         replay snapshots & candles
 ```
 
-Docker volume (planned):
+Docker volume:
 
 ```yaml
 volumes:
@@ -123,7 +123,7 @@ https://qr.yourdomain.com/api/kurisko/tradingview-webhook?secret=YOUR_SECRET
 | Lighter.xyz integration | Kurisko VPS uses Capital only |
 | METS backtest / paper / live | Not QR scanner |
 | Aziz S1–S9 day-trade UI | Not Kurisko |
-| Prisma / database (METS) | Replaced by planned SQLite candle/snapshot store — see [data design](./KURISKO_DATA_PERSISTENCE.md) |
+| Prisma / database (METS) | Replaced by SQLite candle/snapshot store — see [data design](./KURISKO_DATA_PERSISTENCE.md) |
 | Research / astro-bazi | Unrelated |
 | Worker / cron / self-improve | Unrelated |
 | Portfolio / walk-forward | Unrelated |
@@ -162,7 +162,7 @@ rsync -av ../METS-v1/src/features/kurisko/ ./src/features/kurisko/
 rsync -av ../METS-v1/src/app/api/kurisko/ ./src/app/api/kurisko/
 ```
 
-## Data directory & backup (planned)
+## Data directory & backup
 
 When persistence is enabled (`KURISKO_DATA_ENABLED=true`):
 
@@ -174,10 +174,10 @@ mkdir -p data
 **Backup:** stop the container, copy `data/kurisko.db` (checkpoint WAL first if using WAL mode).  
 **Restore:** replace the file and restart; delta backfill fills any gap since backup.
 
-**Status check (planned):** `GET /api/kurisko/history/status`
+**Status check:** `GET /api/kurisko/history/status`
 
 ## Next implementation step
 
-Follow [PROJECT_PLAN.md](./PROJECT_PLAN.md) **Phase 1**: SQLite candle store + incremental backfill.
+Kurisko persistence + replay are **done**. Next research work is **Dux GUS Phase 2** (event-driven backtest) — see [PROJECT_PLAN.md](./PROJECT_PLAN.md).
 
-Completed: TradingView webhook (`POST /api/kurisko/tradingview-webhook`).
+Dux history store (separate DB): `data/dux/kurisko_dux.db` — [dux/PHASE1_DATA.md](./dux/PHASE1_DATA.md).

@@ -1,0 +1,351 @@
+[00:00]->[00:30]
+It is the story of $27,000 to now over $50 million. This year alone, he's had, that he shared on X, a $7 million trade, close to a $10 million trade, and that trade I made about $1. 5 million just in 15 minutes. So shorting has to be very precise, or you are taking a huge amount of risk and potentially lose more than 100%. If they don't avoid the first red day, it will become the first losing day, because he has made $50 million from just $27,000.
+
+[00:30]->[01:01]
+Introducing Steven Dux. Now, this process is very important because once you have simulated how much money you can make by the end of the year, when you are trading every day, it eliminates your emotion from being FOMO. Because in this episode, Steven breaks down the exact statistics that he has built around three of his trading models. He shares those exact models with us step by step so that you can implement them into your own trading. This is where back in the day I was trying to dig into how to really precisely capture the top. I have sectioned initial market cap.
+
+[01:01]->[01:39]
+So you kind of have to look into other people's mindset, the bigger, larger players, because it's a much larger market cap. Ideally, for hedge funds, you do not want to push more than... Steven then shares exact trade examples using this methodology that has made him tens of millions of dollars in 2025 alone. If you want to be consistently profitable, test the strategy by yourself first. Make sure that whenever you are designing a strategy, it's fundamentally tied to either. Welcome, everyone, back to Chart Fanatics, the go-to channel for all of the very best strategy and concept breakdowns in the world with some of the very best traders in the world as well.
+
+[01:39]->[02:11]
+Talking of which, we have a phenomenal trader. We had him on Words of Wisdom earlier this year, and we were very blessed to do so, and the episode did absolutely incredibly. YouTube even tried to hinder our progress because of how great the results are. It is the story of $27,000 to now over $50 million. This year alone, he's had, that he shared on X anyway, a $7 million trade, close to a $10 million trade. You already know who it is because there's not many traders who can do such a performance.
+
+[02:11]->[02:46]
+It's the one and only Steven Dux. Hello, guys. Thanks for being here, Stephen. Honestly, it's a true honor to have you back, and I've been super excited all year to get you here on Chart Fanatics, and today we're going to go through some strategies of yours. And yeah, I guess just hand it straight over to you. Where should we begin? Okay. All right. So today I would like to cover maybe about two to three, because some of the concepts are combined. I will start with the approach of how I really build my strategy and why fundamentally it works, and yeah, let's get started.
+
+[02:46]->[03:19]
+Perfect. All right, guys, so the first strategy will be gap-up short. Second strategy will be bounce short. Third strategy, it's what people commonly call first red day, but this strategy is very strict in terms of criteria. So to be able to increase its winning percentage, you have to really be selective, and there's many situations that it won't work.
+
+[03:19]->[03:52]
+So I will approach it by statistics, volume, and also share price matters as well. So all those strategies, first of all, only work on small caps. So let's start with the very first criteria. The initial market cap has to be between $1 million and $100 million. This is the market cap. Second criteria will be the float.
+
+[03:52]->[04:29]
+The float has to be anywhere between 1 million and 50 million. Now, there are specific sections between it. 1 million to 2 million is considered to be very low float. 2 million to 5 million is considered to be mid-float. Now, 5 million to 10 million is considered to be large float. Now, typically when we're running into something around 10 million to 20 million, we don't run into this type of play that much.
+
+[04:29]->[05:00]
+Mhm. But the strategy also works as well. So let's start with the very first: gap-up short. The reason why we call it gap-up short is, in the morning, we see a stock typically gap over 100%, 70%, sometimes even 1,000%. So the very first thing you want to approach is select by the market cap. If the market cap is over $200 million, then it's not doable.
+
+[05:00]->[05:33]
+It has to be under $100 million market cap. The second one: look at the float. If the float is over 50 million, the majority of the time, 99% of the time, it's not really tradable. So make sure to filter that one out as well. The third, and then we have to take a look at the volume. So whenever there are volume sections, it's between 1 to 10 million and 10 to 20 million.
+
+[05:33]->[06:04]
+20 million to 40 million is still tradable. When pre-market volume exceeds 50 million, that's where you have to pay attention, because if the pre-market trades over 50 million, that means after market open, we're going to trade in more volume because people are interested. Then the typical ratio is around 1:5 to 1:10. So if the pre-market volume trades around 50 million, you are estimating the entire day's volume trades around 500 million.
+
+[06:04]->[06:41]
+So if 500 million is going to be really crowded into a market cap that's only under $100 million, you know, it's going to be very difficult. There's going to be a lot of algos playing games, and it's very difficult for a short strategy to work. Now, the majority of the time, volume concentrates between 9:30 after market open to 11:30. So if we see a mass consolidation, maybe there is a way to short in the afternoon, because volume dies out, and most of the volume that people traded is in the morning.
+
+[06:41]->[07:12]
+As soon as something cracks, more people are stuck on the top, and it will cause a chain reaction for the stock to drop. So this is something to pay attention to. Then the third thing is we have to pay attention to this before the market opens. Mhm. So we have to pay attention to its sectors. There are three sectors. There are about two sectors you cannot trade. First of all is biotech.
+
+[07:12]->[07:44]
+Biotech is very different. I have tracked countless statistics by using gap-up short to trade biotech. The winning percentage drops by about 20 to 30%. So that's something I tend to avoid. Every time I see a gap-up short on the scanner, I delete that. I don't want to see it, because I have traded biotech for many, many years. I have probably traded about 300 to 500 tickers.
+
+[07:44]->[08:15]
+The net profit of biotech is probably maybe around $1 million to $2 million in 500 tickers. So it takes a lot of mental energy. It's just not worth it. So it's biotech; it messes with the winning percentage. The second one is the energy sector. Okay. Make sure to avoid that sector as well. So those two are very important. That doesn't work on gap-up short, bounce short, and ideally first red day.
+
+[08:15]->[09:12]
+So now if it's really over all three, all three of these, yep, you would look to avoid. If it's really overextended, let's say something goes up from $1 to $1,000. Now, maybe that's something to consider, but the majority of the time, on something around 200, 300%, maybe even under 500%, avoid it. Oh, there's another one I forgot about. The Chinese stocks. Okay. This one you have to tend to avoid because whenever, on the intraday volume, if it trades less than 30 million, I have seen tickers get halted, and it's really thin. The volume on the Level 2 seems really thin, and as soon as you get halted, I've seen tickers go from $2 to $200, and there's no way for people to get out, and people are taking significant losses on it.
+
+[09:12]->[09:50]
+I personally took about two or three, I think it's maybe five, in the course of my lifetime, a trading lifetime, and it's not pleasant. So I have managed to avoid going from $2 to $200, but I have taken maybe from $20 to $30. I made like a 100% loss because there's no way to get out. Trading education is completely broken. For years, the industry has been purged and poisoned by bad actors, fake results, and strategies hidden behind paywalls.
+
+[09:50]->[10:21]
+But in every industry, every once in a while, there becomes a catalyst, a moment in time for change. Now, imagine a world where elite trading education was entirely free. Education with no hidden agenda, verified trading results, and real profitable strategies, all for free. Welcome to Chart Academy. Chart Academy is the world's first all-in-one platform for trading education. Chart Academy is free.
+
+[10:21]->[10:52]
+No catch, no upsells, no strings attached. World-class trading education, completely free. Hi, my name is Randy Howell, and welcome to my Chart Academy Master Class. This is completely revolutionary, the biggest change in trader education in 20 years. My name is Karma Rosado. I'm a verified seven-figure trader. I've been trading for 10 years now. The reason why a lot of great deals fail is because they ultimately... This work is about self-mastery.
+
+[10:52]->[11:23]
+Trading education will never be the same again. Browse hundreds of hours of content in forex, futures, stocks, options, and crypto from the best verified traders on the planet, all in one platform. Experience a completely personalized trading plan tailored to you and your goals. Reach milestones, redeem points, and earn rewards with a massive global community. Whether you trade forex, futures, stocks, options, or crypto, Chart Academy has something for you.
+
+[11:23]->[11:55]
+Join the waitlist now and be part of a movement that is going to change trading education forever. You mentioned in terms of statistics, just in terms of creating this criteria. How does that look for you? Is that like an automated process of collecting statistics, or are you essentially putting in the criteria of market cap and the float and the volume, and then looking at the particular tickers and setups, and then seeing how they performed, and then creating the win percentage and seeing what works, what doesn't?
+
+[11:55]->[12:38]
+It's not automated. Yeah, I have tracked by hand, pretty much starting from 2015. So it's almost 10 years, and every day when I see something, I'll put it in my spreadsheets, and because, for its market cap, float, pushing percentage, volume on the day, and also selecting them by sectors, after countless amounts of hours, I have figured out a criteria of how to really approach the best gap-up short, and this is what allows you to... So just to be clear then as well, these rules that we're covering here, is this just for the gap-up short, or is this across all three?
+
+[12:38]->[13:24]
+Across all three. Okay, perfect. So first, except for this one, first red day market cap can go up to $200 million. Gotcha. Over that, then it's probably not ideal. Okay. So the second thing, just in terms of statistics, the reason why I'm giving you this criteria and how I really approach the statistics, first of all, I track the frequency of how many times they happen per year. So gap-up short happens, after taking out all those biotech, energy, and China plays, about 50 times a year. 50 to 70 times happens a year. The winning percentage is about 75% or plus.
+
+[13:24]->[13:59]
+Sometimes even higher. Then I track down the reward: what's their average fading percentage? So if I'm shorting it, on average, it goes down about 26% from the intraday high, so I'm calculating the reward. So the very first one is I know how many times they happen per year. I know what my winning percentage is. So if, let's say, on average it happens around 70 times a year, I'm winning close to 50 of them on the year.
+
+[13:59]->[14:33]
+Gotcha. And each year and each sample, I'm winning 26%. Okay. So I will know how much money I'm going to make throughout the end of the year. Now, this process is very important because once you have simulated how much money you can make by the end of the year, when you are trading every day, it eliminates your emotion from being FOMO because you know, okay, well, I just wait for the year. This is how much money I'm likely to make, and it's And this is what you were saying in the podcast, when you were saying what you do is you compare to what your perfect result should be.
+
+[14:33]->[15:07]
+Yeah. And as long as you're trying to get close to that or you're on track, that's all that matters. Correct. Yes. So, of course, there's some human error, that sometimes a ticker goes not the way you think, and you have to cut losses, and all of a sudden the stock goes back down again. So you have to try to adapt to the market by using statistics and using both to make sure that you are trying to approach the best statistics possible.
+
+[15:07]->[15:38]
+So that's the reason how I do it. And it's been working out pretty well. This data here is the gap-up short, right? Yeah. Okay. So now let's go into after market open. Once we have filtered out the float, market cap, volume, and sectors, let's go into after market open. So first of all, we want to track, we want to know how much volume traded in the pre-market.
+
+[15:38]->[16:11]
+So let's assume today you traded 10 million shares in the pre-market, and I'm estimating today is going to trade between 50 million shares to 100 million shares throughout the day. Now, by statistics, the majority of the volume concentrates between 9:30 to 11:30, and almost about 30 to 35% of the volume on the day trades before 11. So volume concentrates in a very short period of time, and after 11, volume tends to get slow.
+
+[16:11]->[16:49]
+Mhm. And we want to have as many emotional trades in the morning as possible, for other people, of course. So we want to track down the average pushing percentage. So after market open, usually when a stock becomes really hot, there are people who want to chase right at the open. Of course, we're going to cover the historical chart, but we're only focused on intraday here. So ideally we want to look between 20% pushing percentage to 35% pushing percentage.
+
+[16:49]->[17:19]
+Now, the higher the percentage, the better the winning percentage is. And now here we have to section and separate them by float. So typically, when I run into between 1 million to 2 million, the average pushing percentage becomes much higher because it's low float, and high demand, of course, pushes the stock much higher. Mhm. So I have tracked down between 1 to 2 million.
+
+[17:19]->[17:59]
+Average pushing percentage is between 30% to 35%. After that, the stock tends to consolidate. Once they consolidate for one hour, that's where I typically start to size in, and between about 10 to 11, the stock shows the first weakness on the breakdown. That's where I add a full position, risking this consolidation. Okay. Okay. So your risk will be, your stop loss will be above that high. Correct. So now, if you are running into something between 5 to 10 million and it pushed about 20% to 25%, that's in the average.
+
+[17:59]->[18:32]
+Mhm. Then, of course, using the same method, wait until 11, start a partial position, and after the momentum shifts, maybe cracks about 5% to 3%, size in full position. Risk the consolidation. The average risk on the trade is around 7%. The average fading percentage is around 26%. Of course, you're assessing a little bit below, so you're looking at 25% to 24%. So your risk-reward is between 1 to 4, no, 1 to 3.
+
+[18:32]->[19:04]
+5. Here we go. Yeah. So you're looking at entry here for the full-size position. Correct. And then stop loss above the consolidation consolidations. Yes. And then, in terms of the criteria, is there a particular percentage on the way up, the upside, that you want to see? Oh, yes. The gap-up short, yeah, I forgot about covering this. It has to be above 100%. Gotcha. Okay. Yeah. Mhm. So, above 100%. You want to see that spike at the market open, see that volume as well.
+
+[19:04]->[19:34]
+Yeah. And then you want to see it consolidate. And once you start to see that first initial breakdown after that consolidation is where you can then look to enter your position, stop loss above the high. And then you're looking for a breakdown of 20 to 35%. Correct. And the volume has to be matched as well. So, let's say the pre-market volume is 10 million. I'm estimating 100 million throughout the day. Gotcha. And before 11, it traded 30% of the estimated volume. Okay. Gotcha. So all the criteria has to line up together for me to take an entry. Gotcha. Perfect. So that's the gap-up short.
+
+[19:34]->[20:08]
+That's gap-up short. Yes. And then next we have, is it bounce short? Is it? Yes. Next is a bounce short. Yes. Futures traders. It's time to hear about Apex Trader Funding. The largest futures firm in the industry. They have completely changed the game with their new evaluations. So far, they've already paid out over $600 million to traders around the world, just like me and you. Now, not only that, Apex actually holds the record for the largest payout to traders, which is of course with JadeCap, no stranger to Chart Fanatics, with $2.
+
+[20:08]->[20:48]
+5 million in a single payout. And the person before that was Trader Kane, with $2 million in payouts. Now, what sets Apex apart? Apex, you can get up to 20 accounts, which no other firm offers. Now, not only that, they have extremely clear rules with their revamp. There's no MAE rule, no 5:1 risk-to-reward rule, no hidden rules, no gray areas, clearly defined drawdown models. So, you have two options now. End-of-day drawdown and intraday trailing drawdown, which means no payout denials, no payout reviews, no discretionary decisions, and no surprises.
+
+[20:48]->[21:19]
+What sets them apart as well? Traders receive 100% of approved payout requests up to 20 accounts, as I mentioned, and one day to pass. Now, the other thing that I love about Apex, not only can you get 20 accounts, but there are different account sizes. So they have 20K accounts all the way to 150K accounts. So you can get 20 of any of the account sizes that you choose. Not only that, you have various trading platforms, from WealthCharts to Tradovate and Rithmic.
+
+[21:19]->[22:06]
+The choice is yours. So make sure you use the code CF to get up to 90% off on evaluations right now using the link in the description below. Try Apex today. Let's get back to the episode. But it's amazing to see, in terms of not just the layout of the trade, and here's entry, here's It's actually statistics and specifics in terms of why we need each of these criteria to then create a higher-probability trade. Correct. And you see that, would you say a lot of traders miss that element of actually working out, okay, how if this criteria is adjusted, let's say the float or the market cap, instead of it being 1 to 5, it's 10 to 20, and how that then changes the result of the trade or the probability of a trade?
+
+[22:06]->[22:37]
+Do you think a lot of traders just kind of skip? They really miss that specific, because trading is all about supply and demand. Now, if there's lower float, higher volume, of course the stock's going to push much higher. Now, if you're shorting at the average 25%, you are missing that extra 10%. Of course, you're going to get shaken out and potentially take a loss. So you have to be really strict on the criteria to prevent you from making mistakes like that. Gotcha.
+
+[22:37]->[23:13]
+Really screws with the performance. So then, bounce short, how does that differ from the gap-up short? Okay. Okay. So the bounce short—first of all, I want to explain the psychology behind the bounce short. To be able to trade a bounce short, we typically have to look at the long-term chart. So first of all, we want to go back one year. The chart, ideally, that we want to see is individual candles that create a massive amount of resistance.
+
+[23:13]->[23:45]
+So ideally, something flat. Then we had one spike on the volume bar, probably traded, let's say, 30 million, price $5. Oh yeah, I forgot: we'll cover the price. All of those tickers, the price has to be over $3. If it's not over $3, it becomes very difficult. It also messes with the statistics as well. Okay. So, $3 price for all three.
+
+[23:45]->[24:24]
+Yeah. Now, the reason why the bounce short works is... okay. So after this day, after the big spike to five from maybe $1, it drops all the way down and stays flat for two months, ideally. Then all of a sudden, we see a gap-up short. Okay, that gapped over 100%. Let's say it gapped from two to 4 4.5. Got you. When we run into this type of situation, first of all, we know that we traded 30 million volume on this one candle, and we dumped the day after.
+
+[24:24]->[24:54]
+So the majority of the volume is stuck around $5, and it's been two months. Everybody's stuck. They don't... they want to get out. As soon as they see a gap-up short, a gap-up, they want to exit as soon as the market opens. So it will create that massive selling pressure just based on human psychology, because they want to break even. They're down 70%; all of a sudden, they're up now, close to even, and the majority of people's first reaction, by human psychology, is to sell.
+
+[24:54]->[25:28]
+Yeah. So once you sell, you create selling pressure, and I'm opening up a short position at the open. So I'm riding your selling pressure all the way down. And that's the pattern based on human psychology. So first of all, there's still criteria in there. The very first one is in terms of dollar amount. So basically, we use the bottom 30 million times the price, the most consolidated price.
+
+[25:28]->[26:04]
+So after we look at the one-year chart, we find this candle. We go into the intraday chart. Mhm. We want to see something like it gapped up, it consolidated for a while, and dropped. So now the average consolidation price is at $5. Okay. Then, if you want to go into the very precise way, you basically calculate all of the volume, not combined together, because some of the volume traded under five.
+
+[26:04]->[26:36]
+So you want to go into maybe a one-hour chart or 30-minute chart to combine all that volume at the bottom. So, you know, maybe at the $5 area, you traded 25 million shares. Okay. Now, once you know there are about 25 to 28 million shares traded around $5, now you use the 25 million times five, and so you're looking at maybe a $120 million, $110 million dollar block.
+
+[26:36]->[27:12]
+So it's how much is being blocked at $5. Okay, gotcha. Now, after that, you go into intraday. First of all, you take a look at the volume estimate. So take a look at the pre-market volume. Let's say if it traded around 3 million. Mhm. You're estimating that not by regular standard; you're estimating times 10 throughout the entire day. So, 30 million throughout the day. But something you have to keep in mind is you know that there's going to be selling pressure at the open, and you short.
+
+[27:12]->[27:45]
+So typically, stock opens up and plummets 15 to 20%. So if somebody is looking to long at the open, when they see the stock plummet 15, 20%, they're not likely to buy. Yeah. So the volume estimate will significantly reduce, sometimes up to 50 to 80%. So you're looking at 30 million; it reduces to 10, 15 million. Mhm. And 10 to 15 million amount of shares.
+
+[27:45]->[28:30]
+So 10 million to 15 million cannot compete with the 25 million. Yeah. 25 million volume that's stuck at five. So the ratio becomes 2:1 in terms of volume activity, a rough estimate 2:1, and that significantly increases the bounce short winning percentage. So this is the typical way I take a look at how much volume is driven on intraday, and to calculate winning percentage, the ratio is very important. The higher the ratio is, the more I will size in. So, okay, I understand if it's one-to-one, I will reduce size;
+
+[28:30]->[29:04]
+two-to-one, increase size, up to... I have seen 10-to-one. So 10-to-one, yeah, I have seen. There's one example at GME: the volume estimate is almost 10-to-1, and as soon as it opens, it instant crashes 50%. And that trade I made, it was very early in the days. So I made about $1.5 million, just in 15 minutes. Wow. That's crazy. But it's all based off the fact that, as you... because you said it in the podcast as well, like you really center a lot of your strategies.
+
+[29:04]->[29:39]
+Yes. Statistics and data, but human psychology. Correct. So in this case, it's really kind of the combination of how the statistics reflect the human psychology. You have to combine them to increase your winning. So when you see this ratio increase, it's essentially that emotional element increasing with it. Correct. Yes. So then, therefore, you have more conviction because you know there's going to be max pain, if you will, which then creates... a lot of the time max pain is reflected by a very fast, volatile move. Correct. Yes. So one thing to keep in mind is the dollar block has to be 150 million plus to be ideal.
+
+[29:39]->[30:10]
+Now sometimes you get to 130, 140—I mean, it's doable—but ideally, you want to get 150 million. And then in terms of the criteria to enter here... So then this has taken place. Is the entry looking around here? Mhm. Now, the entry really depends on the open price. The closer we get into the consolidation, the more size you can get in. Okay. Because there's less risk. Yeah. So this is almost similar to a gap short, but it has to have this criteria prior to it. Correct. Yeah.
+
+[30:10]->[30:43]
+Yes. 36 seconds. That's Prime's fastest payout on record. Not 36 hours, not 36 minutes. 36 seconds. The average payout time across the entire firm is 34 minutes. And 98% of their payouts clear in under an hour, which has been verified by Deloitte. That's exactly why they just won Fastest Payout Prop Firm at the UF Awards. Most firms make you wait weeks, and you still have to pray and see if you'll get it. Hola Prime CFDs pays you before your coffee gets cold. And that's why you should trade with Hola Prime for your CFD accounts today.
+
+[30:43]->[31:19]
+You can get a massive 30% off using the code CF at checkout. So make sure you go check them out with the link in the description below. And let's get back to the episode. Ideally, there are a couple different variations on bounce short. There is if it gapped in close to five without much volume being traded in the pre-market, let's say 3 million, maybe 5 million, it increases the winning percentage by statistics. Now, if it's spiking from the very bottom, so after market open, yeah, the stock did not move in the pre-market.
+
+[31:19]->[31:54]
+So it slowly goes up parabolic to five and comes back down. This is type, let's say this is type one. Okay, this is type two. Type two winning percentage is much higher than... Type one winning percentage is much higher than type two. Okay. So just a little bit, in this one, it might take out the high and then still collapse. It will approach the high and collapse. Gotcha. So now the variation on the fading is a little bit different as well.
+
+[31:54]->[32:26]
+When you run into a gap into five, majority of the time you see straight down. If you run into something where volume is building from the bottom and goes up, you're likely to see a bounce, then fade back down. Okay. And the fading percentage is also different. This one fades, let's say the total gain is from here to here; it fades about 75%. This is the 75% from the very top. Okay. This one ideally only fades about 50% from the top.
+
+[32:26]->[32:59]
+So if you count the range, yeah, it cuts in half. That's the 50%. That's the max reward. This is the max reward. So in terms of a bounce short, how often or what's the frequency, like per year? The winning percentage is much higher than gap-up short. It's about 80 to 85%. It happens around 30 times a year. Yeah. So 30 times a year, and then 80 to 85, correct, win rate. Also, there are specific sizing rules.
+
+[32:59]->[33:37]
+Okay. Ideally, you do not want to exceed 10% of the float, also 1% of the volume. So make sure that you keep that in mind. If you size in too much, especially on a low float or 10% of the float, you are likely to break the supply and demand chain, and it becomes very difficult. So because I have grown my account to a much more significant size, I have run into this type of problem: if I size too much, I'm breaking the pattern.
+
+[33:37]->[34:08]
+So the problem is you want to size it into a specific threshold. And back in the day, let's say the stock goes to 4.5, touching the resistance at five, it goes straight down to two. The majority of the time, I might just wait until the close and cover at two, but if you are using significant size, let's say you are shorting 500k shares, 300k shares, you want to cover along the way; you want to give the supply back, okay, for people to react.
+
+[34:08]->[34:38]
+So it's different, man. You have to start playing a different game at the higher levels. Yeah. No, that's incredible. And, yeah, again, seeing the statistics and, you know, it's really great to see because this is the amazing thing I love about this channel in particular, is that we get to have the conversation on Words of Wisdom, the podcast, but then, you know, now to see the actual visualization of, you know, when you're talking about statistics and also the human psychology. Now we can see that bridge and that connection in real time. And then we're going to see the actual trade examples as well.
+
+[34:38]->[35:14]
+But just before we do that, we have the first red day setup. So would you say your first red day setup, in terms of rules, is slightly different to what you've seen out there already? Correct. Yes. First red day, basically you are running into much bigger competition, especially this year, for example. It just happened. A very naturally developed first red day was the BYND chart, Beyond Meat. Yeah. That one is a very standard first red day to talk about.
+
+[35:14]->[35:46]
+Mhm. So first red day, there's a lot of criteria. So first of all, it's not just first red day. There are a lot of preconditions, and there are a lot of criteria you have to avoid. If you don't avoid them, the first red day will become the first losing day. So I have traded many first red days.
+
+[35:46]->[36:22]
+There are about three things you pay attention to. First of all is estimated volume. This estimated volume is very different than gap-up short and bounce short. I'll cover that. Okay. There is also dollar block. There's also intraday fluctuation range.
+
+[36:22]->[36:53]
+Okay. So let's go into the very first of how you really spot first red day, how you really consider something that's a first red day. And because if you don't qualify a first red day, the reward, the entry and exit become really messy, and it's hard to make a profit from. So the very first thing is your initial market cap can range over 100 million.
+
+[36:53]->[37:33]
+Typically, we want something that's under 200 million. So before, if you see something that's going from 1 to 10, and the market cap went from... it's already 600 million, but you want to divide by 10 because it went from 1 to 10. So the initial market cap is, say, 500 million, and right now, then divide by 10, the initial market cap is 50 million. Gotcha. Okay. So ideally, initial market cap has to be under 200 million. The first criteria you want to go into is consecutive green candles with higher volume, either identical or higher volume.
+
+[37:33]->[38:05]
+Okay, there cannot be a red day or a flat day in the middle. You have to see emotional chasing going up day by day, volume higher than the previous day, at the very least three consecutive candles with volume increasing, consistently increasing. So you need that volume for those three consecutive days to increase. Correct. Okay. Also, you need the range as well. So typically, if you only see two days, there are exceptions for two days. This is where I made the DWAC trade.
+
+[38:05]->[38:37]
+It only went up for two days, but the range has to be much higher. So the range created for three days minimum has to be 300%. For two days, it has to be 1,000%. Wow. So you can see it's significant. Yeah. Yeah. Very different. Would you still, even with this one, want to see obviously the volume increase on the second day? Correct. Yes. Which would naturally happen if it's doing 1,000, right? Yes. So if you see, let's say, a red day stuck in between, mhm.
+
+[38:37]->[39:13]
+then the three-day resets. So, okay. The reset starts from here. Okay. One, two, three days. Yeah. With that volume again. Yeah. If it gets another mid red, it resets again. Okay. Got you. So you can see, sometimes you run into multi-day runners, and you say, "Why doesn't it work?" because it's been up for so long, and the stock went from two to 28 and still got room to go up to maybe in the hundreds, because you have those red days in between; it resets emotional for people, emotional rebalancing.
+
+[39:13]->[39:44]
+Yeah. Yes. So now assume that you don't have the red in between. First of all, when you run into something, like I said, I said the minimum 300%, but how do I really try to capture the top? Because once it goes to 300%, it might go to 500%, 600%. If you don't time it right, of course, you're going to get squeezed and take, you know, short setting has to be very precise, or you're taking a huge amount of risk.
+
+[39:44]->[40:20]
+Yeah, a huge amount of risk and potential to lose more than 100%. So this is where I was, back in the days, trying to dig into how to really precisely capture the top. I have sections for initial market cap. So you kind of have to look into other people's mindset, for the bigger, larger players, because it's much larger market cap. Ideally, for hedge funds, you do not want to push more than 30% of the entire market cap, yeah, or the entire float.
+
+[40:20]->[40:52]
+If you push more than that, you are basically playing with yourself. You're pumping and dumping by yourself. You're not going to make money. So you want retail to participate in the trade, to basically transfer their money into your wallet. It's a very simple explanation. So now if you can only size in maybe less than 30%, there's a problem: there's only so much dollar retail can pour in, and there's no more money being poured into this ticker.
+
+[40:52]->[41:25]
+Yeah. As soon as that exhausts, then the stock crashes 50 to even 75%. Typically, the first green day was initiated either by a very beaten-down chart that's squeezing the shorts, and retail starts chasing back in, or it's something that the big hedge funds start on by buying a huge chunk of the float, starting there as well. In terms of the chart, there's a little bit of difference as well.
+
+[41:25]->[41:59]
+So if you're looking at a long-term chart, if the chart keeps trending down, trending down, trending down, and all of a sudden you have one, two, three, those multi-day runners then qualify as the first red day. This type of chart tends to go up a lot more compared to the average long-term chart that is flat, then one, two, three as a multi-day runner. So keep that in mind. Then let's go into how to really capture the top.
+
+[41:59]->[42:34]
+First of all, pay attention to, as I said, the initial market cap. Okay. If the initial market cap is, let's say, in a section under 50 million, yeah, now you want to, let's say, you don't know how to trade first red day. You want to get to know that. How do you really... You want to section all the multi-day runners and calculate what type of volume they trade on consolidations, and then stock starts to drop on that very tip.
+
+[42:34]->[43:12]
+So you can calculate what the dollar amount being traded is at the very top. Yeah. And I have tracked them all together. I have hundreds of samples. I found that pretty much the same market cap, initial market cap, rounds up all the way up, and even though their market cap and float have to be under the same section, the price is different. But pretty much all of those multi-day runners that qualify first red day, if they're within the same initial market cap, they all stop at the same dollar amount, really.
+
+[43:12]->[43:46]
+So, very similar. So if it's in initial market cap, they stop at one, and once they trade, let's say, $200 million at five, 200 million shares at $5, it trades $1 billion, stock starts to go down. If initial market cap is 100 million, it trades $3 billion; stock tends to go down. Now, starting at 200 million, it trades at maybe $5 billion to $10 billion; stock tends to go down. And you want to section them by their initial market cap.
+
+[43:46]->[44:26]
+So if a ticker starts at, let's say, IPO at 300 to 500 million, and IPO is a little bit different. Yeah. And their dollar block starts around $30 billion, so it starts to go down. Now, this one applied to CRCL that happened this year. So that's something that you want to look at. And figure out how to really predict when it's coming, and also to prepare yourself, because I've run into a situation where I keep taking losses on the way up and I'm making profit on the way down.
+
+[44:26]->[45:01]
+Basically, I'm neutralizing my losses and wins. So you want to avoid taking losses on the way up. This is where you want to track down that average volume increasing. So ideally, let's say it starts at 15 million shares at the very bottom for this one candle. Then the next day goes up to 70 million because the volume has to continue to increase. The next day goes up to maybe 100 million to 120 million.
+
+[45:02]->[45:34]
+So now, on the fourth, there's a possible chance that it can go up to 150 million to 200 million. Mhm. I've got to tell you something. Hundreds of thousands of traders have already made the switch to TradeZella. And the biggest reason: the AI. TradeZella is the all-in-one platform built to turn you into a profitable trader. And at the center of it is an AI co-pilot that does the heavy lifting for you. It watches every session. It learns exactly how you trade, and your strengths and your weaknesses, the patterns you keep repeating without even knowing it.
+
+[45:34]->[46:07]
+And it tells you in plain language what's working and what needs to change. The moment you close a trade, your AI captures it automatically. Fully synced to your broker or prop firm. Zero manual entry. You can replay any trade tick by tick, pip by pip, to see the full picture. Backtest your strategy on years of real data before you ever put real money behind it. Your AI co-pilot ties all of it together, surfacing insights you'd never find on your own and guiding every decision you make going forward.
+
+[46:07]->[46:43]
+Hundreds of thousands of traders, one AI-powered platform, real lasting results. Now, if you want that AI co-pilot and to see your trading excel, the link for TradeZella is in the description below. Use the code CF20 for 20% off your yearly subscription or CF10 for 10% off your monthly subscription. Let's get back to the episode. Once I figure out the initial market cap and I know the dollar volume, I can calculate. So basically, first of all, let's say it started at $5.
+
+[46:43]->[47:13]
+Now, if I'm trading something that's a much larger market cap, I know that, on average, the daily volatility is around 30% to 50%. So I kind of know that the next day, maybe it trades around 8 to 12; the next day, it trades about 12 to 18; and the next day, it trades about 25 to 30. So on the second day, I'm already looking at the chart.
+
+[47:13]->[47:43]
+Okay, what day is likely to reach its maximum dollar amount before it drops? Yeah. So I'm calculating; maybe in the premarket, I'm looking at it. Okay, today's one estimate is premarket times 10. It's going to reach about 100 million at 12. Now, the dollar volume is 3 billion. So, okay. Well, today is not likely to reach that. So I'm just not going to touch it. Okay. And turn off the computer and go to the next day.
+
+[47:43]->[48:13]
+Now, if it's 3 billion, trading around 150 million at 20 to 30, this is the day it's likely to reach. Okay, this allows you to step away and not have to just focus and watch it for no reason, and avoid losses most of all, because again, with the first red day, that's the biggest thing. You're trying to almost predict when this is going to turn to get that high-risk-reward trade correct, but in doing so, loads of people just end up, as you say, taking losses; so many people take losses. I mean, I am also. You're done.
+
+[48:13]->[48:50]
+Yeah. So I have to really dig deep into how to really avoid losses on the way up because, you know, first red day, you're shorting; I mean, of course, the stock can run up 2,000%, 3,000%. But if you're shorting, the maximum you can only make is 50%. You know, on a massive crash. So being very, very precise is very important. Mhm. This way prevents you from taking losses on the way up. And so, did Beyond Meat fit this criteria, or was that slightly different, or did it fit the first red day with these rules?
+
+[48:50]->[49:25]
+Now, Beyond almost fit the range. Okay. So all of those things have to combine together. It's not just one. The market doesn't give you a textbook. Of course. Yeah. This is like I always highlight: this whiteboard thing is like a textbook. This is what we're showing as a textbook, and then we go on to the actual reality from the trade examples and stuff. Because it's easy to see this and think, oh, this is easy, you know, it's going to be perfect like this, but yeah, no, it's good to highlight it's not as simple because there's also, you need the experience of controlling size.
+
+[49:25]->[49:56]
+Yeah. Control size and control your risk because, as I talked about the gap-up short and bounce short, I also said that based on the winning percentage, you size in more based on the winning percentage; if it's lower, you size in less, yeah, and also the volume ratios you have to pay attention to. Let's say the volume ratio is significant, but the price is barely $3. Now, how are you going to size? You're going to size in smaller because it doesn't really meet the $3-plus criteria. Now, if it's like 2.
+
+[49:56]->[50:27]
+8, 2. 9, barely touches the criteria, then you have to kind of size down as well. So there's a lot of experience in controlling size and paying attention to the little criteria. So in terms of this then, frequency-wise, you know, what was the frequency of the first red day? The frequency of first red day happens between 5 to 10 times a year. But this one doesn't have a size limit. So if your account is big, you can really grow your account by only focusing on those first red days.
+
+[50:27]->[50:58]
+For gap-up short and bounce short, typically. Now, there are exceptions, like GME, AMC, those hyped-up tickers. That only happens maybe two to three times a year. Average gap-up short and bounce short. The maximum size I personally have touched is around 1 million to 1. 2 million. Wow. So your average reward on each of those tickers is probably 200k to 300k max. Yeah. On first red day, then you can make up to millions, even billions.
+
+[50:58]->[51:31]
+So on that first red day for you, on Beyond Meat, that was a $7 million trade. Yeah, yes, that I think I could really push to maybe 12 to 13 million. But you know, the size has become so big that it's really affecting the ticker. If the trade doesn't really work out, I have to cover my size. I have to take maybe an extra 5% loss or 6% loss because of my size.
+
+[51:31]->[52:03]
+Yeah. And that's why I do feel like that's almost pushed you to really look into statistics and data a lot more so that you can really minimize those losses, because if you get trapped in at that sort of size, it's going to be a disaster. Yes. So the bigger the size is, the more difficult the game becomes. Perfect. And in terms of just the entry then, before we move on to the chart examples, what would that look like for first red day? How do you look to actually size, you know, when's the right time, or how do you go about the entry on the first red day?
+
+[52:03]->[52:35]
+Yeah, so let's go into the intraday of the very last day of the multi-day runner. So once we have the premarket, then we consolidate and we have reached the dollar amount right here, 3 billion. Then the first thing I'm looking at is: don't rush shorting on the current day because it can do something like that. I've run into that type of situation before. So you think it's going to break its dollar volume, and then it does a fakeout and crashes down.
+
+[52:35]->[53:08]
+So on the very first day, once it reaches, only size in maybe one-fourth of your position. The reason why is momentum doesn't likely shift when the volume is extremely high. So you are waiting for the second day because the second day tells you the stock is going to drop. Now, the reason why it's applied to the bounce short concept is because, in the bounce short concept, on the intraday volume, you are not going to compete with the resistance volume.
+
+[53:08]->[54:03]
+There's more people selling apples than the current day buying apples. Mhm. Now it's the same concept after we go into the second day. During the premarket, the volume trades significantly less, maybe even, so let's say on this day, it traded 200 million volume; in the premarket, it only traded 7 million or maybe even 5 million. So by volume estimate, you are not going to compete with the 200 million on the previous day. The volume ratio should become significantly different; it becomes 4 to 1 or maybe 3 to 1, and this is where we're entering the first red day. This is the prior day. Yeah, this is where we're entering the first red day. Got you. Ideally, the majority of the time, you're not going to see a bounce, so you kind of have to calculate. The reason why we size one-fourth is to bring up your average by sizing in at most at the open, because ideally you want to size at the bounce because it minimizes your risk.
+
+[54:03]->[54:35]
+But on average samples, I don't even see the bounce that happens at the open. So pay attention to this gap, because this is where your risk is, by risking the consolidation, and you just ride it all the way down. Typically, this range is pretty wide, maybe between like 10 to 15%. But the winning percentage on this first red day can get up to 90%.
+
+[54:35]->[55:12]
+So you can really push size, and yeah, I have seen some tickers that push into the resistance but still fail. So the winning percentage is extremely high. It's worth the risk. Yeah. So you put the stop loss above the consolidation. If it's had a spike, would you put it above the spike or still just above the consolidation? Still around the consolidation. Gotcha. So here, entry-wise, you've got one quarter of a position here, and then on the bounce, you would look to size in the remaining of the position, which in essence could be around a similar area or just short of that.
+
+[55:12]->[55:49]
+Correct. Yes. Gotcha. So for all the new traders out there, I mean, I have grown from being a new trader to trading for almost 10 years plus now. Make sure that whenever you are designing a strategy, it's fundamentally tied to either human psychology or has to logically make sense. If it does, if somebody gives you, let's say, follows the criteria of this one has to meet a certain criteria that doesn't make logical or psychological sense, then the strategy is not likely to work.
+
+[55:49]->[56:24]
+And also, if you want to be consistently profitable, test the strategy by yourself first. Yeah, that's very important. So in this video, I'm going to cover three specific patterns for gap-up short, bounce short, and the first red day. So I'm going to give an example for each to show you guys what to look for on first red day, gap-up short, and bounce short. So let's go over the first one. First red day. So specifically, first of all, you want to look for some parabolic action.
+
+[56:24]->[56:56]
+So the price trend is speeding up, and it's trading more volume than the previous day. And on the third one, which is very important, you need consecutive green days, at least three days. So one, two, three, four, five, but you can see on this day, it's a red day. So it makes it really difficult to predict the following red day. So for the first red day, it is that you spot the first red day and you short on the second day.
+
+[56:56]->[57:27]
+So let's say you spot the first red day; you had one, two, three. So it closed red, but during the day, it was green. So now it still fits the three-day consecutive green-day candle. Then going to the following day, if it's green, then you do not want to short it. You want to stay away. But if it is red, yes, you can. So for this case, it has one, then if it had a red day in between, then it does not count for first red. It needs to reset for another three consecutive green days.
+
+[57:27]->[58:02]
+So one, and two, and three. So this one closed red, but it was green during the day. So it closed red, and after open, it gapped down. So it's for sure that during the day, it's going to trade in red. And on the following day for silver. This is a very good trade for a potential first red day pattern. As long as the first red day doesn't crash over 50% of the entire gain. So in this case, the entire gain started from $50.
+
+[58:02]->[58:32]
+If you do a range, this is the whole run-up, and it gapped down to here. So the 50% is actually here. So there's still a bunch of reward after the open. So shorting around 92, 93-ish is still doable. Personally, I think I got scarred by attempting to short one here. I probably shorted one here, and I wasn't really focused on the first red pattern.
+
+[58:32]->[59:08]
+So I made two mistakes on those two. So I got scarred. Do you want to take more losses on silver? And I did not catch this first red day. But this is a classic first red day pattern. So three conditions. First of all, look for parabolic action. Second, look for three consecutive green days where volume has to pass each previous day. Now, if you want to go into detail, then you can see the volume is actually decreasing from the previous day, but it's trading at a higher price.
+
+[59:08]->[59:50]
+So the actual dollar-traded volume is bigger than the previous day. So the standard is the dollar amount. So the average dollar traded on the day times the volume has to be greater than the volume times the average price traded on the previous day. So that's the three conditions for first red day, and also make sure that the range is suitable for shorting after the first red day. There's not a specific market cap range because it works on pretty much all market caps, and ideally, it's much better to predict on small caps.
+
+[59:50]->[01:00:25]
+So small caps, three consecutive green days with at least 300% range from the initial breakout, then it is doable and also qualifies for the first red day pattern. So that's the example for first red day. Then let's talk about a specific gap-up short. There are all different variations of a gap-up short.
+
+[01:00:25]->[01:00:57]
+So let's talk about BIRD first. Now, one of the reasons why gap-up short doesn't have a high winning percentage is a lot of people tend to short on a ticker that's very crowded. So on BIRD specifically, this one traded about I think it was around 70 million shares in the premarket. There's one condition: if a ticker trades more than 50 million volume before the market opens, it is ideally not tradable using gap-up short.
+
+[01:00:57]->[01:01:30]
+So the majority of the gap-up shorts, if it has strength at the open, it will spike up and go into a consolidation that's right here. Then you can see it squeezed all the way up. So if the ticker is really crowded and it traded like 50 million shares before market open, then it's ideally going to trade a couple hundred million shares throughout the day. So before 10:30, if you are trading 150 million shares, there's going to be another 150 million shares going to trade after this consolidation.
+
+[01:01:30]->[01:02:03]
+So the majority of the time, it tends to not work on the breakdown. So shorting the breakdown, sorry, once the crowded day is over, going to the following day, if it gaps down, the volume will dry up. That's where your shorting opportunity tends to appear. But this is one of the examples where you do not want to use gap-up short. This is one of the gap-up short patterns.
+
+[01:02:03]->[01:02:35]
+The initial spiking point is $3. So it gapped all the way to nine, and when it spiked up, it pushed through the premarket consolidation and it topped around 12 and faded all the way back down. Of course, on the following day, it faded back down again. The only reason why this one didn't fade all the way back to four is the float is too low. So if the volume trades very crowded, it's relative.
+
+[01:02:35]->[01:03:23]
+So let's say it trades 30 million volume; it's already very high for a float that's around 700k. Ideally, if the float rotates more than 15 times, it is not very ideal. So this is generally crowded, so the reward will get reduced on gap-up short, but this is one of the variations on gap-up short: EIQ. If the float is really low, you want to wait for a clear signal for you to short, specifically on something that drops 50% from the top, then bounces; that's where you short.
+
+[01:03:23]->[01:04:00]
+So in this case, there are two methods you want to go with this. First of all, you want to spot the float. Let's say if it's under 2 million, it's considered to be a very low float, a nano-float. If it's trading on very dense volume, over 15 times the float rotation, after the clear signal of a 50% pullback on the bounce, this is where you enter. But if the float is around 5 million or 10 million, you can try to short against the premarket high, and that's where it tends to top.
+
+[01:04:00]->[01:04:33]
+So these are about two ways I go for a lower float to a higher float. But gap-up short, there's a bunch of details involved based on the float amount. If the float is between 3 to 5 million, then you want to size in but not in full size. If the float is much higher, let's say 7 to 8 million, then you can size against the premarket high by using maybe 50%, 60% of your initial position. So it's all based on statistics.
+
+[01:04:33]->[01:05:06]
+How low is the float, and how much the volume trades throughout the day? And also, the lower the float, the more dangerous it will be. And the lower the float, if it passes a one-million threshold or under two-million threshold, you want to wait for a clear signal that momentum is shifting, then short into a bounce. So that's for gap-up short. Let's say bounce short. Bounce short is relatively easy. Here is one of the examples for bounce short.
+
+[01:05:06]->[01:05:47]
+So this one went from two to six, trading around 100 million volume; then it tested the previous-day high, trading with much less volume, and it faded all the way down. So first of all, for bounce short, there's a market cap limitation that ideally works under 200 million market cap, under 50 million float. You want to spot that a single-day candle ideally has more than 100 million volume and is also trading into a consolidation.
+
+[01:05:47]->[01:06:21]
+So let's take a look at March 30th. So you can see the consolidation; the majority of them landed around 5. 6. So going to a bounce short, if the ticker spikes up, you want to aim for this consolidation as your risk to build your position, and also make sure that you're sizing proportionally to not let your risk go off the charts. Then, two days later, we had a bounce.
+
+[01:06:21]->[01:06:51]
+You can see it tested; it was consolidating around six into resistance. So shorting at the open is not too bad. This is one of the bounce shorts that happened. It was trading much less volume, and also you want to do a volume comparison, that the current-day volume estimate has to trade much lower compared to the concentrated volume that traded on the first green day. So specifically for gap-up short, you can use gap-up short as the first green day. If it's crowded, then you do not want to use gap-up short.
+
+[01:06:51]->[01:07:43]
+You can use that consolidation as your risk to short as a bounce short. So the patterns tend to work with each other and help you; some conditions help you avoid big losses on the first green day. Don't trade the crowded tickers on the first green day without resistance. Ideally, if the float rotates more than 15 times, you want to reduce your size significantly. Other than that, that'll be all the examples: gap-up short, BIRD, and first red day that happened in 2026. So that'll be all. Thank you. I love that. Thank you, Stephen. I appreciate that, and no better words to say than after Stephen there. So this has been Chart Fanatics. Take a
+
