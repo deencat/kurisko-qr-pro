@@ -1,28 +1,23 @@
 # Kurisko QR Pro — Project plan
 
 > **Last updated:** 2026-08-03  
-> **Kurisko design:** [KURISKO_DATA_PERSISTENCE.md](./KURISKO_DATA_PERSISTENCE.md) · [KURISKO_QR_VPS.md](./KURISKO_QR_VPS.md)  
-> **Dux GUS research:** [dux/GUS_PARAM_SCHEMA.md](./dux/GUS_PARAM_SCHEMA.md) · [dux/PHASE1_DATA.md](./dux/PHASE1_DATA.md) · [dux/PHASE2_BACKTEST.md](./dux/PHASE2_BACKTEST.md)
+> **Kurisko:** [KURISKO_DATA_PERSISTENCE.md](./KURISKO_DATA_PERSISTENCE.md) · [KURISKO_QR_VPS.md](./KURISKO_QR_VPS.md)  
+> **Dux GUS:** [PHASE1](./dux/PHASE1_DATA.md) · [PHASE2](./dux/PHASE2_BACKTEST.md) · [PHASE3](./dux/PHASE3_PAPER.md) · [PHASE4](./dux/PHASE4_LIVE.md) · [schema](./dux/GUS_PARAM_SCHEMA.md)
 
-Two tracks in this repo:
+Two tracks:
 
 1. **Kurisko QR Pro** — Capital.com VPS scanner (live + persistence)
-2. **Dux GUS research** — US equity short strategy (history → backtest → paper → Futu live later)
+2. **Dux GUS** — US equity short research (history → backtest → paper → micro-live)
 
 ---
 
 ## Track A — Kurisko QR scanner
 
-| Area | Status | Notes |
-|------|--------|-------|
-| Live K1 scan + scheduler | Done | 60s tick, in-memory cache |
-| TradingView webhook | Done | Instant alerts on VPS |
-| Gap / premarket / levels widgets | Done | Cached in RAM per tick |
-| Data persistence | **Done** | SQLite candles, snapshots, alerts |
-| Replay API + UI | **Done** | History routes + scanner UI |
-| METS backtest port | Out of scope | Stays in METS-v1 |
-
-Full phased checklist: [KURISKO_DATA_PERSISTENCE.md](./KURISKO_DATA_PERSISTENCE.md).
+| Area | Status |
+|------|--------|
+| Live K1 scan + TV webhook | Done |
+| SQLite persistence + replay | Done |
+| METS backtest port | Out of scope |
 
 ---
 
@@ -30,40 +25,36 @@ Full phased checklist: [KURISKO_DATA_PERSISTENCE.md](./KURISKO_DATA_PERSISTENCE.
 
 | Phase | Status | Outcome |
 |-------|--------|---------|
-| **P0** Gap defs + param grids | ✅ Done | [GUS_PARAM_SCHEMA.md](./dux/GUS_PARAM_SCHEMA.md) + smoke seed + FIX_* fixtures |
-| **P1** Historical data store + Futu ingest | ✅ Done | `src/lib/dux` (`node:sqlite`) + fixtures + OpenD ingest |
-| **P2** Event-driven backtest + sweeps | ✅ Done / verified | Engine + smoke + `gap_min` family sweep |
-| **P3** Paper forward + parity | **Next** | Shadow fills, no live shorts |
-| **P4** Futu micro-live shorts | Pending | `max_sell_short` gate; Webull backup |
+| **P0** Param schema | ✅ | [GUS_PARAM_SCHEMA.md](./dux/GUS_PARAM_SCHEMA.md) |
+| **P1** Data store + Futu ingest | ✅ | `npm run dux:test` |
+| **P2** Event backtest + sweeps | ✅ | `npm run dux:smoke` / `dux:sweep` |
+| **P3** Paper + parity | ✅ | `npm run dux:paper-smoke` |
+| **P4** Futu micro-live | ✅ | `npm run dux:live-smoke` (dry-run default) |
 
-### Phase 2 verification (2026-08-03)
-
-```bash
-npm run dux:test    # Phase 1 still green
-npm run dux:smoke   # PHASE2_SMOKE_PASSED
-npm run dux:sweep -- --family gap_min
-```
-
-| Check | Result |
-|-------|--------|
-| FIX_ALLOW trades (≥1 short+cover) | Pass |
-| FIX_CROWDED skip `crowded_pm` | Pass |
-| FIX_NANO skip `nano_rotation` | Pass |
-| Sweep `gap_min` ranked JSON | Pass → `data/dux/runs/` |
-
-See [dux/PHASE2_BACKTEST.md](./dux/PHASE2_BACKTEST.md).
-
-### Phase 1 verification (2026-08-02)
+### Full Dux verification
 
 ```bash
-npm run dux:test
-# PHASE1_SELFTEST_PASSED
+npm run dux:test && npm run dux:smoke && npm run dux:paper-smoke && npm run dux:live-smoke
 ```
 
-Broker notes: Futu HK primary for US shorts (locate-gated); Webull HK ETB-only backup. Quota = distinct symbols / 7 days.
+| Phase | Command | Signal |
+|-------|---------|--------|
+| P1 | `dux:test` | `PHASE1_SELFTEST_PASSED` |
+| P2 | `dux:smoke` | `PHASE2_SMOKE_PASSED` |
+| P3 | `dux:paper-smoke` | `PHASE3_PAPER_PASSED` |
+| P4 | `dux:live-smoke` | `PHASE4_LIVE_PASSED` |
+
+Live place (optional, OpenD + arm):
+
+```bash
+DUX_LIVE_ARMED=1 DUX_TRD_ENV=SIMULATE DUX_SYMBOL_ALLOWLIST=US.AAPL \
+  npm run dux:live -- --symbol US.AAPL --broker futu
+```
+
+Default `dux:live` is **unarmed dry-run** (no `place_order`).
 
 ---
 
 ## Vision
 
-Ship a measurable GUS research loop (data → backtest → paper) before live size. Kurisko remains the Capital.com scanner; Dux stays under `docs/dux` + `src/lib/dux` + `scripts/dux`.
+Measurable GUS loop before meaningful size. Scanner UI unchanged by Dux (CLI research track). Next optional work: real gapper history sweeps, pullback/handoff variants, thin paper dashboard.

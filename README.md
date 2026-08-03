@@ -13,6 +13,8 @@ Slim VPS deployment — John Kurisko K1 quad rotation dashboard (Capital.com), p
 | [docs/dux/GUS_PARAM_SCHEMA.md](./docs/dux/GUS_PARAM_SCHEMA.md) | Dux Gap-Up Short param defs + search grids |
 | [docs/dux/PHASE1_DATA.md](./docs/dux/PHASE1_DATA.md) | Futu history ingest → local SQLite store |
 | [docs/dux/PHASE2_BACKTEST.md](./docs/dux/PHASE2_BACKTEST.md) | Event-driven GUS backtest + param sweeps |
+| [docs/dux/PHASE3_PAPER.md](./docs/dux/PHASE3_PAPER.md) | Paper shadow fills + backtest parity |
+| [docs/dux/PHASE4_LIVE.md](./docs/dux/PHASE4_LIVE.md) | Futu micro-live shorts (dry-run default) |
 
 ## Quick start
 
@@ -41,6 +43,8 @@ Persistence is enabled by default (`KURISKO_DATA_ENABLED=true`). Set `false` for
 npm install
 npm run dux:test       # Phase 1 self-test (fixtures + asserts)
 npm run dux:smoke      # Phase 2 GUS engine smoke on FIX_*
+npm run dux:paper-smoke # Phase 3 paper parity
+npm run dux:live-smoke  # Phase 4 gates + mock dry-run/submit
 npm run dux:sweep -- --family gap_min
 npm run dux:status
 

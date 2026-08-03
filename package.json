@@ -13,6 +13,10 @@
     "dux:smoke": "tsx scripts/dux/backtest-smoke.ts",
     "dux:backtest": "tsx scripts/dux/backtest-run.ts",
     "dux:sweep": "tsx scripts/dux/sweep.ts",
+    "dux:paper-smoke": "tsx scripts/dux/paper-smoke.ts",
+    "dux:paper": "tsx scripts/dux/paper-run.ts",
+    "dux:live-smoke": "tsx scripts/dux/live-smoke.ts",
+    "dux:live": "tsx scripts/dux/live-run.ts",
     "dux:ingest": "scripts/dux/.venv/bin/python scripts/dux/ingest_futu_history.py"
   },
   "dependencies": {

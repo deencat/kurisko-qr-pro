@@ -33,3 +33,30 @@ export type {
   SweepRow,
   SkipReason,
 } from "./backtest";
+export {
+  runPaperSession,
+  assertParity,
+  PaperBroker,
+  ensurePaperSchema,
+  recentPaperRuns,
+} from "./paper";
+export type { PaperMode, PaperOrder, PaperRunResult, ParityReport } from "./paper";
+export {
+  loadLiveConfig,
+  evaluateIntent,
+  runLiveSession,
+  intentsFromTrades,
+  createBroker,
+  MockBroker,
+  FutuBroker,
+  WebullBroker,
+  ensureLiveSchema,
+  recentLiveRuns,
+} from "./live";
+export type {
+  LiveConfig,
+  LiveIntent,
+  LiveTicket,
+  LiveSessionResult,
+  LiveBroker,
+} from "./live";
