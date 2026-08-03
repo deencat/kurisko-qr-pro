@@ -53,6 +53,8 @@ DUX_LIVE_ARMED=1 DUX_TRD_ENV=SIMULATE DUX_SYMBOL_ALLOWLIST=US.AAPL \
 
 Default `dux:live` is **unarmed dry-run** (no `place_order`).
 
+**UI:** `/day-trade/dux` — paper runs/trades + live dry-run tickets (`GET /api/dux/status`). Link from QR header “Dux”.
+
 ---
 
 ## Vision

@@ -113,3 +113,27 @@ export function recentLiveRuns(limit = 10, db = getDuxDb()) {
     summary_json: string | null;
   }[];
 }
+
+export function recentLiveOrders(limit = 40, db = getDuxDb()) {
+  ensureLiveSchema(db);
+  return db
+    .prepare(
+      `SELECT id, run_id, symbol, t, side, intent_shares, clamped_shares, price, reason, status, max_sell_short, broker_order_id, broker_msg
+       FROM live_orders ORDER BY id DESC LIMIT ?`
+    )
+    .all(limit) as {
+    id: number;
+    run_id: number;
+    symbol: string;
+    t: number;
+    side: string;
+    intent_shares: number;
+    clamped_shares: number;
+    price: number;
+    reason: string;
+    status: string;
+    max_sell_short: number | null;
+    broker_order_id: string | null;
+    broker_msg: string | null;
+  }[];
+}

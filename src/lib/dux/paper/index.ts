@@ -8,4 +8,6 @@ export {
   insertPaperOrders,
   insertPaperTrades,
   recentPaperRuns,
+  recentPaperTrades,
+  recentPaperOrders,
 } from "./store";

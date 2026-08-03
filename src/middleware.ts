@@ -9,6 +9,7 @@ const isPublicRoute = createRouteMatcher([
   "/scan/qr(.*)",
   "/api/kurisko(.*)",
   "/api/capital(.*)",
+  "/api/dux(.*)",
 ]);
 
 const withClerk = clerkMiddleware(async (auth, req) => {

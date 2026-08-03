@@ -139,3 +139,44 @@ export function recentPaperRuns(limit = 10, db = getDuxDb()) {
     summary_json: string | null;
   }[];
 }
+
+export function recentPaperTrades(limit = 20, db = getDuxDb()) {
+  ensurePaperSchema(db);
+  return db
+    .prepare(
+      `SELECT id, run_id, symbol, entry_ts, exit_ts, shares, avg_entry, avg_exit, pnl, exit_reason
+       FROM paper_trades ORDER BY id DESC LIMIT ?`
+    )
+    .all(limit) as {
+    id: number;
+    run_id: number;
+    symbol: string;
+    entry_ts: number;
+    exit_ts: number;
+    shares: number;
+    avg_entry: number;
+    avg_exit: number;
+    pnl: number;
+    exit_reason: string;
+  }[];
+}
+
+export function recentPaperOrders(limit = 40, db = getDuxDb()) {
+  ensurePaperSchema(db);
+  return db
+    .prepare(
+      `SELECT id, run_id, symbol, t, side, shares, price, reason, source
+       FROM paper_orders ORDER BY id DESC LIMIT ?`
+    )
+    .all(limit) as {
+    id: number;
+    run_id: number;
+    symbol: string;
+    t: number;
+    side: string;
+    shares: number;
+    price: number;
+    reason: string;
+    source: string;
+  }[];
+}

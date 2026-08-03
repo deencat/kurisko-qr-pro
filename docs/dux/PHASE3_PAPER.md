@@ -110,4 +110,4 @@ src/lib/dux/paper/
 
 ## Next
 
-Phase 4: Futu micro-live shorts behind `max_sell_short` + explicit arm flag (default dry-run).
+Optional UI: `/day-trade/dux` research desk (paper + live tickets). Real gapper history sweeps and pullback/handoff variants remain research backlog.

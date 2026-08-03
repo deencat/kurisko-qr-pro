@@ -48,6 +48,9 @@ npm run dux:live-smoke  # Phase 4 gates + mock dry-run/submit
 npm run dux:sweep -- --family gap_min
 npm run dux:status
 
+# UI: paper/live research desk (after server start)
+# open /day-trade/dux
+
 # Optional: live Futu OpenD history pull
 python3 -m venv scripts/dux/.venv
 scripts/dux/.venv/bin/pip install -r scripts/dux/requirements.txt

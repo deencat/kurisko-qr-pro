@@ -13,4 +13,4 @@ export { evaluateIntent } from "./gates";
 export { MockBroker, FutuBroker, WebullBroker, createBroker } from "./broker";
 export type { LiveBroker, BrokerPlaceResult } from "./broker";
 export { runLiveSession, intentsFromTrades } from "./session";
-export { ensureLiveSchema, recentLiveRuns, insertLiveRun, insertLiveTickets } from "./store";
+export { ensureLiveSchema, recentLiveRuns, recentLiveOrders, insertLiveRun, insertLiveTickets } from "./store";

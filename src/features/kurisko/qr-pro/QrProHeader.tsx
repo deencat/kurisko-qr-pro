@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Bell, ChevronLeft, ChevronRight, History, Loader2, Radio, RefreshCw, Volume2, VolumeX } from "lucide-react";
 import { playTestAlert } from "./useKuriskoAudioAlerts";
@@ -87,6 +88,12 @@ export function QrProHeader({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-4">
           <h1 className="text-lg font-black tracking-tight text-white">QR PRO SCANNER</h1>
+          <Link
+            href="/day-trade/dux"
+            className="rounded border border-slate-700 px-2 py-0.5 text-[10px] font-semibold text-slate-400 hover:border-cyan-500/40 hover:text-cyan-200"
+          >
+            Dux
+          </Link>
           {mode === "live" ? (
             <span className="inline-flex items-center gap-1 rounded border border-emerald-500/50 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
               <Radio className="h-3 w-3" />

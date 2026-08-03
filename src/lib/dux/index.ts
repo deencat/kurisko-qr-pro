@@ -39,6 +39,8 @@ export {
   PaperBroker,
   ensurePaperSchema,
   recentPaperRuns,
+  recentPaperTrades,
+  recentPaperOrders,
 } from "./paper";
 export type { PaperMode, PaperOrder, PaperRunResult, ParityReport } from "./paper";
 export {
@@ -52,6 +54,7 @@ export {
   WebullBroker,
   ensureLiveSchema,
   recentLiveRuns,
+  recentLiveOrders,
 } from "./live";
 export type {
   LiveConfig,
@@ -60,3 +63,4 @@ export type {
   LiveSessionResult,
   LiveBroker,
 } from "./live";
+export { getDuxResearchStatus } from "./status";
