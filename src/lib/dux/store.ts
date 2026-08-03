@@ -146,6 +146,39 @@ export function candleStats(): { symbol: string; resolution: string; bars: numbe
     .all() as unknown as { symbol: string; resolution: string; bars: number; first_t: number; last_t: number }[];
 }
 
+export function getSymbolMeta(symbol: string, db = getDuxDb()): DuxSymbolMeta | null {
+  const row = db
+    .prepare(
+      `SELECT symbol, float_shares, mcap_usd, sector, is_biotech, is_energy, is_china_adr, as_of, source
+       FROM symbols WHERE symbol = ?`
+    )
+    .get(symbol) as
+    | {
+        symbol: string;
+        float_shares: number | null;
+        mcap_usd: number | null;
+        sector: string | null;
+        is_biotech: number;
+        is_energy: number;
+        is_china_adr: number;
+        as_of: number | null;
+        source: string;
+      }
+    | undefined;
+  if (!row) return null;
+  return {
+    symbol: row.symbol,
+    floatShares: row.float_shares,
+    mcapUsd: row.mcap_usd,
+    sector: row.sector,
+    isBiotech: Boolean(row.is_biotech),
+    isEnergy: Boolean(row.is_energy),
+    isChinaAdr: Boolean(row.is_china_adr),
+    asOf: row.as_of,
+    source: row.source,
+  };
+}
+
 export function upsertSymbolMeta(meta: DuxSymbolMeta, db = getDuxDb()): void {
   db.prepare(
     `INSERT INTO symbols (symbol, float_shares, mcap_usd, sector, is_biotech, is_energy, is_china_adr, as_of, source)

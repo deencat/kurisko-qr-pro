@@ -10,6 +10,9 @@
     "dux:fixtures": "tsx scripts/dux/generate-fixtures.ts && tsx scripts/dux/import-fixtures.ts",
     "dux:status": "tsx scripts/dux/store-status.ts",
     "dux:test": "tsx scripts/dux/phase1-selftest.ts",
+    "dux:smoke": "tsx scripts/dux/backtest-smoke.ts",
+    "dux:backtest": "tsx scripts/dux/backtest-run.ts",
+    "dux:sweep": "tsx scripts/dux/sweep.ts",
     "dux:ingest": "scripts/dux/.venv/bin/python scripts/dux/ingest_futu_history.py"
   },
   "dependencies": {
