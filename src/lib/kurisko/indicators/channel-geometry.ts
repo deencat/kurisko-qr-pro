@@ -176,6 +176,9 @@ function findDescending123(pivots: PivotPoint[], minBarsBetweenPivots: number): 
         if (p3.i - p1.i > MAX_CHANNEL_SPAN_BARS) continue;
         if (p3.price >= p1.price) continue;
         if (p2.price >= p1.price) continue;
+        // P2 must sit below the P1–P3 upper rail (else parallel clone inverts).
+        const upperProbe = lineThrough(p1.t, p1.price, p3.t, p3.price);
+        if (!(p2.price < upperProbe(p2.t))) continue;
 
         const seq: ChannelPivot123 = {
           kind: "down",
@@ -210,6 +213,9 @@ function findAscending123(pivots: PivotPoint[], minBarsBetweenPivots: number): C
         if (p3.i - p1.i > MAX_CHANNEL_SPAN_BARS) continue;
         if (p3.price <= p1.price) continue;
         if (p2.price <= p1.price) continue;
+        // P2 must sit above the P1–P3 lower rail (else parallel clone inverts).
+        const lowerProbe = lineThrough(p1.t, p1.price, p3.t, p3.price);
+        if (!(p2.price > lowerProbe(p2.t))) continue;
 
         const seq: ChannelPivot123 = {
           kind: "up",
@@ -262,7 +268,23 @@ const none: ChannelLines = {
   midAt: () => 0,
 };
 
-function buildFrom123(seq: ChannelPivot123): ChannelLines {
+/**
+ * Parallel rails must stay oriented: lower strictly below upper across the 1-2-3 span.
+ * For parallel lines, checking P1/P2/P3 is enough (constant width).
+ */
+export function channelRailsOriented(
+  upperAt: (t: number) => number,
+  lowerAt: (t: number) => number,
+  times: number[]
+): boolean {
+  for (const t of times) {
+    if (!(lowerAt(t) < upperAt(t))) return false;
+  }
+  return true;
+}
+
+/** Build rails from locked 1-2-3 pivots; rejects crossed/inverted geometry. */
+export function buildChannelFrom123(seq: ChannelPivot123): ChannelLines {
   if (seq.kind === "down") {
     // Upper rail MUST pass through P1 and P3; lower rail MUST pass through P2 (parallel).
     const upperAt = lineThrough(seq.a.t, seq.a.price, seq.c.t, seq.c.price);
@@ -274,6 +296,9 @@ function buildFrom123(seq: ChannelPivot123): ChannelLines {
       Math.abs(upperAt(seq.c.t) - seq.c.price) > eps ||
       Math.abs(lowerAt(seq.b.t) - seq.b.price) > eps
     ) {
+      return none;
+    }
+    if (!channelRailsOriented(upperAt, lowerAt, [seq.a.t, seq.b.t, seq.c.t])) {
       return none;
     }
     return {
@@ -295,6 +320,9 @@ function buildFrom123(seq: ChannelPivot123): ChannelLines {
     Math.abs(lowerAt(seq.c.t) - seq.c.price) > eps ||
     Math.abs(upperAt(seq.b.t) - seq.b.price) > eps
   ) {
+    return none;
+  }
+  if (!channelRailsOriented(upperAt, lowerAt, [seq.a.t, seq.b.t, seq.c.t])) {
     return none;
   }
   return {
@@ -329,10 +357,10 @@ export function buildChannelFromPivots(
   const up = findAscending123(slice, minBarsBetweenPivots);
 
   if (down && up) {
-    return buildFrom123(down.score >= up.score ? down.seq : up.seq);
+    return buildChannelFrom123(down.score >= up.score ? down.seq : up.seq);
   }
-  if (down) return buildFrom123(down.seq);
-  if (up) return buildFrom123(up.seq);
+  if (down) return buildChannelFrom123(down.seq);
+  if (up) return buildChannelFrom123(up.seq);
   return none;
 }
 
@@ -412,16 +440,37 @@ export function upperRailContextOk(
   return false;
 }
 
+function channelValidOrientation(channel: ChannelLines): boolean {
+  if (!channel.valid) return false;
+  if (channel.pivots) {
+    return channelRailsOriented(channel.upperAt, channel.lowerAt, [
+      channel.pivots.a.t,
+      channel.pivots.b.t,
+      channel.pivots.c.t,
+    ]);
+  }
+  // Fallback sample when pivots are missing (should not happen for locked episodes).
+  const t = 0;
+  return channel.lowerAt(t) < channel.upperAt(t);
+}
+
 export function channelValidDown(channel: ChannelLines): boolean {
   if (!channel.valid || channel.direction !== "down") return false;
+  if (!channelValidOrientation(channel)) return false;
   const deg = Math.abs(channel.slopeDeg ?? 0);
   return deg >= 15 && deg <= 40;
 }
 
 export function channelValidUp(channel: ChannelLines): boolean {
   if (!channel.valid || channel.direction !== "up") return false;
+  if (!channelValidOrientation(channel)) return false;
   const deg = Math.abs(channel.slopeDeg ?? 0);
   return deg >= 15 && deg <= 40;
+}
+
+/** Spec-aligned: locked episode + slope gate used by K1_E1 (down or up). */
+export function channelValidK1(channel: ChannelLines): boolean {
+  return channelValidDown(channel) || channelValidUp(channel);
 }
 
 /** @deprecated Use buildChannelFromStructure */

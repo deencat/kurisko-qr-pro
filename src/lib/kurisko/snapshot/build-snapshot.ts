@@ -3,8 +3,8 @@ import "server-only";
 import { loadAzizMarketData } from "@/lib/aziz/improvement/market-data";
 import { diagnoseK1LatestBar } from "@/lib/kurisko/backtest/k1-diagnose";
 import { buildDualTfContext, channelAtTime, structureIndexAt } from "@/lib/kurisko/backtest/dual-tf-context";
-import { aggregateCandles } from "@/lib/kurisko/indicators/channel-geometry";
-import { buildQuadStochStack } from "@/lib/kurisko/indicators/stochastic-quad";
+import { channelValidK1 } from "@/lib/kurisko/indicators/channel-geometry";
+import { episodesForChart } from "@/lib/kurisko/indicators/channel-episodes";
 import { KURISKO_STOCH_PARAMS } from "@/lib/kurisko/constants";
 import {
   getKuriskoTimeframePair,
@@ -91,7 +91,20 @@ export async function buildKuriskoSnapshot(params: BuildKuriskoSnapshotParams): 
     c: c.c,
   }));
 
-  const keyLevels = channel.valid
+  const chartTStart = chartBars[0]?.t ?? bar.t;
+  const chartTEnd = bar.t + structurePeriodMs;
+  const channelEpisodes = episodesForChart(
+    ctx.channelEpisodes,
+    chartTStart,
+    chartTEnd,
+    bar.t,
+    12,
+    bar.c
+  );
+
+  // Align UI "channelValid" with K1_E1 slope gate (not raw episode lock).
+  const channelOk = channelValidK1(channel);
+  const keyLevels = channelOk
     ? {
         upper: channel.upperAt(bar.t),
         mid: channel.midAt(bar.t),
@@ -108,9 +121,10 @@ export async function buildKuriskoSnapshot(params: BuildKuriskoSnapshotParams): 
     structureResolution: timeframePair.structure,
     barTs: bar.t,
     price: bar.c,
-    channelDirection: channel.direction,
-    channelValid: channel.valid,
+    channelDirection: channelOk ? channel.direction : "none",
+    channelValid: channelOk,
     keyLevels,
+    channelEpisodes,
     chartBars,
     vortexFlux,
     marketContext,

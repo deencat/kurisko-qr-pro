@@ -93,6 +93,7 @@ export function QrProLiveCharts({ snapshots, levels }: Props) {
               <QrProMiniChart
                 bars={bars}
                 keyLevels={s.keyLevels}
+                channelEpisodes={s.channelEpisodes}
                 pivot={symLevels?.pivot ?? null}
                 showTimeScale
                 height={156}
@@ -139,6 +140,7 @@ export function QrProLiveCharts({ snapshots, levels }: Props) {
                       : aggregateBars(expandedSnapshot.chartBars ?? [], TF_MS[tf])
                   }
                   keyLevels={expandedSnapshot.keyLevels}
+                  channelEpisodes={expandedSnapshot.channelEpisodes}
                   pivot={levelMap.get(expandedSnapshot.symbol)?.pivot ?? null}
                   showTimeScale
                   height={380}

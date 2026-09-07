@@ -2,11 +2,15 @@
 
 import { useEffect, useRef } from "react";
 import { createChart, type IChartApi, type ISeriesApi, type UTCTimestamp } from "lightweight-charts";
+import type { KuriskoChannelEpisodeDraw } from "@/lib/kurisko/backtest/chart-window-types";
+import { episodeToRailSeries } from "@/lib/kurisko/backtest/channel-chart-draw";
 import type { KuriskoChartCandle, KuriskoKeyLevels } from "@/lib/kurisko/snapshot/types";
 
 interface Props {
   bars: KuriskoChartCandle[];
   keyLevels?: KuriskoKeyLevels | null;
+  /** Prefer sloping parallel rails over flat keyLevels when present. */
+  channelEpisodes?: KuriskoChannelEpisodeDraw[] | null;
   pivot?: number | null;
   showTimeScale?: boolean;
   height?: number;
@@ -16,6 +20,7 @@ interface Props {
 export function QrProMiniChart({
   bars,
   keyLevels,
+  channelEpisodes,
   pivot,
   showTimeScale = false,
   height = 72,
@@ -108,7 +113,62 @@ export function QrProMiniChart({
       levelRefs.current.push(pivotLine);
     }
 
-    if (keyLevels) {
+    const episodes = channelEpisodes?.filter((ep) => ep.tEnd > ep.tStart) ?? [];
+    if (episodes.length > 0) {
+      for (const ep of episodes) {
+        const series = episodeToRailSeries(ep);
+        if (!series) continue;
+        const highlight = ep.highlight;
+        const upperColor = highlight ? "#fde047cc" : "#fde04755";
+        const midColor = highlight ? "#94a3b8aa" : "#94a3b844";
+        const lowerColor = highlight ? "#22d3eecc" : "#22d3ee55";
+        const width = highlight ? 2 : 1;
+
+        for (const [pts, color] of [
+          [series.upper, upperColor],
+          [series.mid, midColor],
+          [series.lower, lowerColor],
+        ] as const) {
+          const line = chart.addLineSeries({
+            color,
+            lineWidth: width as 1 | 2,
+            lineStyle: highlight ? 0 : 2,
+            priceLineVisible: false,
+            lastValueVisible: false,
+          });
+          line.setData(pts.map((p) => ({ time: toTime(p.t), value: p.value })));
+          levelRefs.current.push(line);
+        }
+
+        // P1 / P2 / P3 markers on the highlighted episode only.
+        if (highlight) {
+          const markers = [
+            { t: ep.p1.t, price: ep.p1.price, label: "1", color: "#fde047" },
+            { t: ep.p2.t, price: ep.p2.price, label: "2", color: "#22d3ee" },
+            { t: ep.p3.t, price: ep.p3.price, label: "3", color: "#a78bfa" },
+          ];
+          for (const m of markers) {
+            if (m.t < bars[0]!.t || m.t > bars[bars.length - 1]!.t) continue;
+            const mark = chart.addLineSeries({
+              color: m.color,
+              lineWidth: 1,
+              lineStyle: 0,
+              priceLineVisible: false,
+              lastValueVisible: false,
+              title: m.label,
+            });
+            // Tiny horizontal tick so lightweight-charts renders a visible point.
+            const dt = 60_000;
+            mark.setData([
+              { time: toTime(m.t - dt), value: m.price },
+              { time: toTime(m.t + dt), value: m.price },
+            ]);
+            levelRefs.current.push(mark);
+          }
+        }
+      }
+    } else if (keyLevels) {
+      // Fallback: scalar levels at "now" (no episode payload) — still horizontal.
       const last = bars[bars.length - 1]!;
       const first = bars[0]!;
       const t0 = toTime(first.t);
@@ -135,7 +195,7 @@ export function QrProMiniChart({
     }
 
     chart.timeScale().fitContent();
-  }, [bars, keyLevels, pivot]);
+  }, [bars, keyLevels, channelEpisodes, pivot]);
 
   return <div ref={ref} className={className ?? "w-full"} />;
 }
