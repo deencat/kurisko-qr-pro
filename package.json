@@ -17,7 +17,10 @@
     "dux:paper": "tsx scripts/dux/paper-run.ts",
     "dux:live-smoke": "tsx scripts/dux/live-smoke.ts",
     "dux:live": "tsx scripts/dux/live-run.ts",
-    "dux:ingest": "scripts/dux/.venv/bin/python scripts/dux/ingest_futu_history.py"
+    "dux:ingest": "scripts/dux/.venv/bin/python scripts/dux/ingest_futu_history.py",
+    "k1:test": "tsx scripts/kurisko/k1-backtest-selftest.ts",
+    "k1:backtest": "tsx --import ./scripts/kurisko/stub-server-only.mjs scripts/kurisko/k1-backtest-run.ts",
+    "k1:smoke": "tsx --import ./scripts/kurisko/stub-server-only.mjs scripts/kurisko/k1-backtest-run.ts --fixture"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.12.0",
