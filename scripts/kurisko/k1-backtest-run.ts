@@ -4,14 +4,19 @@
  * Examples:
  *   npm run k1:backtest -- --symbol US500 --days 3
  *   npm run k1:backtest -- --symbol GOLD --from 2026-09-01 --to 2026-09-03
+ *   npm run k1:backtest -- --symbol GOLD --days 90 --max-pages 200
  *   npm run k1:backtest -- --fixture  # offline synthetic candles
  */
 import fs from "node:fs";
 import path from "node:path";
 import { loadCapitalEnv } from "./load-env";
-import { fetchCapital1mRange, isCapitalConfigured } from "./capital-fetch";
+import {
+  DEFAULT_MAX_PAGES,
+  fetchCapital1mRange,
+  isCapitalConfigured,
+} from "./capital-fetch";
 import { runK1EventBacktest } from "../../src/lib/kurisko/backtest/k1-event-engine";
-import { diagnoseK1Funnel } from "../../src/lib/kurisko/backtest/k1-diagnose";
+import { diagnoseK1Funnel, type K1FunnelStats } from "../../src/lib/kurisko/backtest/k1-diagnose";
 import type { LighterCandle } from "../../src/lib/lighter/client";
 
 loadCapitalEnv();
@@ -52,6 +57,9 @@ async function main() {
   const days = Number(arg("--days") ?? "2");
   const toArg = arg("--to");
   const fromArg = arg("--from");
+  const maxPages = Number(arg("--max-pages") ?? String(DEFAULT_MAX_PAGES));
+  const useCache = !has("--no-cache");
+  const skipFunnel = has("--no-funnel");
   const endTs = toArg ? Date.parse(toArg) : Date.now();
   const startTs = fromArg ? Date.parse(fromArg) : endTs - dayMs(Number.isFinite(days) ? days : 2);
 
@@ -61,6 +69,7 @@ async function main() {
 
   let candles: LighterCandle[];
   let source: string;
+  let fetchMeta: Record<string, unknown> = {};
 
   if (useFixture) {
     candles = syntheticCandles(500);
@@ -72,15 +81,27 @@ async function main() {
     candles = syntheticCandles(500);
     source = "fixture:synthetic (no capital env)";
   } else {
-    console.log(`Fetching Capital 1m ${symbol} ${new Date(startTs).toISOString()} → ${new Date(endTs).toISOString()}`);
+    console.log(
+      `Fetching Capital 1m ${symbol} ${new Date(startTs).toISOString()} → ${new Date(endTs).toISOString()} ` +
+        `(maxPages=${maxPages}, cache=${useCache})`
+    );
     const fetched = await fetchCapital1mRange({
       symbol,
       startTimestamp: startTs,
       endTimestamp: endTs,
+      maxPages: Number.isFinite(maxPages) ? maxPages : DEFAULT_MAX_PAGES,
+      useCache,
       onProgress: (m) => console.log(m),
     });
     candles = fetched.candles;
     source = `capital:${fetched.epic} (${fetched.volumeMode} volume)`;
+    fetchMeta = {
+      pages: fetched.pages,
+      fromCache: fetched.fromCache,
+      cacheHitBars: fetched.cacheHitBars,
+      rangeStart: candles[0] ? new Date(candles[0].t).toISOString() : null,
+      rangeEnd: candles.length ? new Date(candles[candles.length - 1]!.t).toISOString() : null,
+    };
   }
 
   console.log(`Bars: ${candles.length} · source=${source}`);
@@ -89,7 +110,13 @@ async function main() {
     console.warn("Short history — expect few/no SIGNAL entries (need warmup + structure).");
   }
 
-  const funnel = diagnoseK1Funnel(candles, 5 * 60_000);
+  const t0 = Date.now();
+  let funnel: K1FunnelStats | null = null;
+  if (!skipFunnel) {
+    console.log("Running diagnoseK1Funnel…");
+    funnel = diagnoseK1Funnel(candles, 5 * 60_000);
+  }
+  console.log("Running K1 event engine…");
   const result = runK1EventBacktest(candles, {
     symbol: useFixture ? "SYNTH" : symbol,
     structurePeriodMs: 5 * 60_000,
@@ -97,6 +124,7 @@ async function main() {
     equity: 10_000,
     riskPct: 2,
   });
+  const elapsedMs = Date.now() - t0;
 
   const s = result.summary;
   console.log("\n=== K1 event backtest summary ===");
@@ -104,6 +132,13 @@ async function main() {
     JSON.stringify(
       {
         source,
+        ...fetchMeta,
+        period: {
+          from: candles[0] ? new Date(candles[0].t).toISOString() : null,
+          to: candles.length ? new Date(candles[candles.length - 1]!.t).toISOString() : null,
+          requestedFrom: new Date(startTs).toISOString(),
+          requestedTo: new Date(endTs).toISOString(),
+        },
         symbol: s.symbol,
         bars: s.bars,
         signals: s.signals,
@@ -123,15 +158,21 @@ async function main() {
         expectancy: Number(s.expectancy.toFixed(2)),
         maxDrawdown: Number(s.maxDrawdown.toFixed(2)),
         byExitReason: s.byExitReason,
-        funnelSnippet: {
-          channelValidDown: funnel.channelValidDown,
-          atLowerRail: funnel.atLowerRail,
-          execQuadOs: funnel.execQuadOs,
-          bullishDiv: funnel.bullishDiv,
-          longSizingOk: funnel.longSizingOk,
-          channelValidUp: funnel.channelValidUp,
-          shortSizingOk: funnel.shortSizingOk,
-        },
+        elapsedMs,
+        funnelSnippet: funnel
+          ? {
+              channelValidDown: funnel.channelValidDown,
+              atLowerRail: funnel.atLowerRail,
+              execQuadOs: funnel.execQuadOs,
+              bullishDiv: funnel.bullishDiv,
+              longSizingOk: funnel.longSizingOk,
+              channelValidUp: funnel.channelValidUp,
+              atUpperRail: funnel.atUpperRail,
+              execQuadOb: funnel.execQuadOb,
+              bearishDiv: funnel.bearishDiv,
+              shortSizingOk: funnel.shortSizingOk,
+            }
+          : null,
       },
       null,
       2
@@ -152,7 +193,27 @@ async function main() {
   fs.mkdirSync(outDir, { recursive: true });
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
   const outPath = path.join(outDir, `k1-${s.symbol}-${stamp}.json`);
-  fs.writeFileSync(outPath, JSON.stringify({ source, summary: s, trades: result.trades, funnel }, null, 2));
+  fs.writeFileSync(
+    outPath,
+    JSON.stringify(
+      {
+        source,
+        fetchMeta,
+        period: {
+          from: candles[0] ? new Date(candles[0].t).toISOString() : null,
+          to: candles.length ? new Date(candles[candles.length - 1]!.t).toISOString() : null,
+          requestedFrom: new Date(startTs).toISOString(),
+          requestedTo: new Date(endTs).toISOString(),
+        },
+        summary: s,
+        trades: result.trades,
+        funnel,
+        elapsedMs,
+      },
+      null,
+      2
+    )
+  );
   console.log("\nWrote", outPath);
 }
 
