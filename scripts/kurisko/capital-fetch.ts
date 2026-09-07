@@ -117,10 +117,35 @@ async function capitalFetch<T>(pathSuffix: string, init?: RequestInit, retry = t
 
 const epicCache = new Map<string, string>();
 
+/**
+ * Kurisko / TV aliases → Capital.com CFD epics.
+ * Confirmed demo search: US100→US100, US500→US500, GOLD→GOLD.
+ * NAS100 / NQ do not resolve via free-text search — pin to US100.
+ */
+export const CAPITAL_EPIC_ALIASES: Record<string, string> = {
+  US100: "US100",
+  NAS100: "US100",
+  NQ: "US100",
+  NASDAQ100: "US100",
+  US500: "US500",
+  ES: "US500",
+  SPX: "US500",
+  GOLD: "GOLD",
+  XAUUSD: "GOLD",
+  GC: "GOLD",
+  US30: "US30",
+  BTCUSD: "BTCUSD",
+};
+
 export async function resolveEpic(symbol: string): Promise<string> {
   const key = symbol.trim().toUpperCase();
   const hit = epicCache.get(key);
   if (hit) return hit;
+  const aliased = CAPITAL_EPIC_ALIASES[key];
+  if (aliased) {
+    epicCache.set(key, aliased);
+    return aliased;
+  }
   const data = await capitalFetch<{ markets?: { epic?: string; symbol?: string; instrumentName?: string }[] }>(
     `/api/v1/markets?searchTerm=${encodeURIComponent(key)}`
   );

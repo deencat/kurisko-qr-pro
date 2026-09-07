@@ -158,11 +158,33 @@ export async function capitalFetch<T>(
 
 const epicCache = new Map<string, string>();
 
+/** Kurisko / TV aliases → Capital.com CFD epics (US100 = NAS100 CFD). */
+const CAPITAL_EPIC_ALIASES: Record<string, string> = {
+  US100: "US100",
+  NAS100: "US100",
+  NQ: "US100",
+  NASDAQ100: "US100",
+  US500: "US500",
+  ES: "US500",
+  SPX: "US500",
+  GOLD: "GOLD",
+  XAUUSD: "GOLD",
+  GC: "GOLD",
+  US30: "US30",
+  BTCUSD: "BTCUSD",
+};
+
 export async function resolveCapitalEpic(symbol: string): Promise<string> {
   const raw = symbol.trim();
   const key = raw.toUpperCase();
   const cached = epicCache.get(key);
   if (cached) return cached;
+
+  const aliased = CAPITAL_EPIC_ALIASES[key];
+  if (aliased) {
+    epicCache.set(key, aliased);
+    return aliased;
+  }
 
   const searchTerms = [...new Set([key, key.replace(/\//g, ""), raw])];
 
