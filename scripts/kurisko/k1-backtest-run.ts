@@ -2,9 +2,9 @@
  * K1 event backtest CLI — research smoke (no live trading).
  *
  * Examples:
- *   npm run k1:backtest -- --symbol US500 --days 3
+ *   npm run k1:backtest -- --symbol US100 --days 3
  *   npm run k1:backtest -- --symbol GOLD --from 2026-09-01 --to 2026-09-03
- *   npm run k1:backtest -- --symbol GOLD --days 90 --max-pages 200
+ *   npm run k1:backtest -- --symbol US100 --days 365 --max-pages 500
  *   npm run k1:backtest -- --fixture  # offline synthetic candles
  */
 import fs from "node:fs";
