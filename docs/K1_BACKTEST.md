@@ -2,37 +2,46 @@
 
 Research-only bar-by-bar backtest for **K1 Quad Divergence** (Holy Grail). No live trading / order routing.
 
-## Deep Capital demo results (VIEW)
+## ~12-month Capital demo results (VIEW)
 
-Period: **2026-06-09 → 2026-09-07** (~90 calendar days). Equity \$10k, risk 2%, cost 0.5 bps/side, time stop 20×1m. Capital demo 1m OHLC (synthetic volume).
+Period: **2025-09-07 → 2026-09-07** (~365 calendar days). Equity \$10k, risk 2%, cost 0.5 bps/side, time stop 20×1m. Capital demo 1m OHLC (synthetic volume). Epic map: `US100`/`NAS100`/`NQ` → Capital CFD **US100**.
+
+| Symbol | Bars | Signals | Trades | Win% | PF | Net P&L | Max DD | Exits |
+|--------|------|---------|--------|------|----|---------|--------|-------|
+| US100 | 364 836 | 215 | 215 | 47.4% | 0.82 | −1 962.42 | 2 022.94 | 94 stop / 85 tp_mid / 33 stoch_a / 3 time_stop |
+| GOLD | 353 302 | 272 | 272 | 45.2% | 0.76 | −3 292.34 | 3 387.11 | 135 stop / 92 tp_mid / 41 stoch_a / 4 time_stop |
+| US500 | 361 797 | 61 | 61 | 49.2% | 1.00 | −302.15 | 468.55 | 21 stop / 25 tp_mid / 13 stoch_a / 2 time_stop |
+
+### Funnel (stage counts over the ~12m window)
+
+| Stage | US100 | GOLD | US500 |
+|-------|-------|------|-------|
+| channelValidDown | 17 196 | 27 235 | 7 758 |
+| atLowerRail | 6 734 | 8 565 | 2 585 |
+| execQuadOs | 1 810 | 1 225 | 893 |
+| bullishDiv | 877 | 659 | 326 |
+| longSizingOk | 309 | 218 | 91 |
+| channelValidUp | 19 940 | 31 639 | 8 699 |
+| atUpperRail | 6 486 | 10 751 | 3 117 |
+| execQuadOb | 1 573 | 2 348 | 865 |
+| bearishDiv | 717 | 1 083 | 335 |
+| shortSizingOk | 191 | 376 | 45 |
+
+### Honest read
+
+- **Not a performance claim.** Over ~12 months all three symbols are flat-to-negative after costs; US100/GOLD PF \< 1, US500 PF ≈ 1.00 with costs (−305) wiping a tiny gross (+2.87).
+- US100 has a usable sample (215 trades) — still no edge under this MVP cost/pathing model.
+- Signal density: US100 ~0.6/day, GOLD ~0.7/day, US500 ~0.17/day of 1m tape (strict K1 stays rare on the index).
+- Funnel remains alive on all three (rails → quad → div → sizing).
+
+### Prior ~90d baseline (kept)
+
+Period: **2026-06-09 → 2026-09-07** (~90 calendar days).
 
 | Symbol | Bars | Signals | Trades | Win% | PF | Net P&L | Max DD | Exits |
 |--------|------|---------|--------|------|----|---------|--------|-------|
 | GOLD | 87 770 | 56 | 56 | 50.0% | 0.91 | −394.20 | 560.90 | 25 stop / 24 tp_mid / 6 stoch_a / 1 time_stop |
 | US500 | 89 992 | 7 | 7 | 57.1% | 1.54 | +40.75 | 75.46 | 3 stop / 3 stoch_a / 1 tp_mid |
-
-### Funnel (stage counts over the window)
-
-| Stage | GOLD | US500 |
-|-------|------|-------|
-| channelValidDown | 6 605 | 1 118 |
-| atLowerRail | 2 141 | 361 |
-| execQuadOs | 451 | 103 |
-| bullishDiv | 222 | 29 |
-| longSizingOk | 69 | 9 |
-| channelValidUp | 6 497 | 1 339 |
-| atUpperRail | 1 924 | 549 |
-| execQuadOb | 415 | 154 |
-| bearishDiv | 213 | 48 |
-| shortSizingOk | 68 | 10 |
-
-### Honest read
-
-- **Not a performance claim.** Costs alone (−280 on GOLD) dominate; PF \< 1 on GOLD over this window.
-- US500 sample is still thin (7 trades / ~3 months) — PF 1.54 is noise-scale, not edge proof.
-- Strict K1 alignment stays rare: GOLD ~0.6 signals per day of 1m tape; US500 far scarcer.
-- Funnel shows the pipe is alive (rails → quad → div → sizing), not a zero-trade wiring bug.
-- Prior 4-day smoke (GOLD 4 trades, US500 1) was undersized; this multi-month pull is the better research baseline.
 
 ### Earlier smoke (kept for comparison)
 
@@ -61,15 +70,17 @@ npm run k1:test
 # Offline smoke (synthetic candles — usually 0 SIGNAL trades; proves CLI wiring)
 npm run k1:smoke
 
-# Capital.com demo history (US500 or GOLD)
+# Capital.com demo history (US100 / US500 / GOLD)
 # Credentials: CAPITAL_API_KEY, CAPITAL_IDENTIFIER, and CAPITAL_API_PASSWORD
 # Liquidity env also works: CAPITAL_PASSWORD (+ CAPITAL_ENV=demo)
+npm run k1:backtest -- --symbol US100 --days 3
 npm run k1:backtest -- --symbol US500 --days 3
 npm run k1:backtest -- --symbol GOLD --from 2026-09-01 --to 2026-09-03
 
-# Multi-week / multi-month (deep paging + local cache under data/kurisko/capital/)
-npm run k1:backtest -- --symbol GOLD --days 90 --max-pages 150
-npm run k1:backtest -- --symbol US500 --days 90 --max-pages 150
+# Multi-month / ~12m (deep paging + local cache under data/kurisko/capital/)
+npm run k1:backtest -- --symbol US100 --days 365 --max-pages 500
+npm run k1:backtest -- --symbol GOLD --from 2025-09-07T22:00:00Z --to 2026-09-07T05:05:00Z --max-pages 500
+npm run k1:backtest -- --symbol US500 --from 2025-09-07T22:00:00Z --to 2026-09-07T05:05:00Z --max-pages 500
 # Re-run from cache: omit --no-cache (default). Fresh pull: --no-cache
 # Skip funnel on huge tapes: --no-funnel
 ```
@@ -88,11 +99,22 @@ JSON runs land under `data/kurisko/runs/`; candle caches under `data/kurisko/cap
 
 Load order: process env → `./.env` → `../.env`. **Do not commit secrets.**
 
+### Symbol → Capital epic
+
+| Kurisko / TV | Capital CFD epic |
+|--------------|------------------|
+| US100, NAS100, NQ | **US100** |
+| US500, ES, SPX | **US500** |
+| GOLD, XAUUSD, GC | **GOLD** |
+
+Pinned in `scripts/kurisko/capital-fetch.ts` (`CAPITAL_EPIC_ALIASES`) and `src/lib/capital/client.ts`. Demo search resolves `US100` directly; `NAS100`/`NQ` do not — aliases required.
+
 ### History depth (demo observed)
 
-- Capital `MINUTE` pages return up to 1000 bars; this CLI pages backward (default `--max-pages 200`) with weekend/empty-window skips (Liquidity-style).
-- GOLD/US500 1m demo returned ~88–90k bars for a 90-day window in Sep 2026; older months often still resolve (demo floor can reach ~2024 on some windows).
-- Cache merge fills older/newer gaps so repeat runs stay offline once seeded.
+- Capital `MINUTE` pages return up to 1000 bars; this CLI pages backward (default `--max-pages 200`; use `500` for ~12m) with weekend/empty-window skips (Liquidity-style).
+- **~12m window (Sep 2025 → Sep 2026):** US100 ≈ 365k bars, GOLD ≈ 354k, US500 ≈ 362k — full requested year completed without hitting an API empty floor (page budget binds first).
+- A follow-on US100 probe still returned continuous 1m data back to **2025-08-04** (~13 months / 400k bars at `--max-pages 400`); **demo ceiling not exhausted** in this run — deeper than 13m is likely with a higher page budget.
+- Prior ~90d pulls: GOLD/US500 ≈ 88–90k bars. Cache merge fills older/newer gaps so repeat runs stay offline once seeded.
 
 ## Interpreting output
 
