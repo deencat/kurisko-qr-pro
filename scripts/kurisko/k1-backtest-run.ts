@@ -111,7 +111,12 @@ async function main() {
         wins: s.wins,
         losses: s.losses,
         winRate: Number((s.winRate * 100).toFixed(1)),
-        profitFactor: s.profitFactor == null ? null : Number(s.profitFactor.toFixed(3)),
+        profitFactor:
+          s.profitFactor == null
+            ? null
+            : !Number.isFinite(s.profitFactor)
+              ? "Inf"
+              : Number(s.profitFactor.toFixed(3)),
         netPnl: Number(s.netPnl.toFixed(2)),
         grossPnl: Number(s.grossPnl.toFixed(2)),
         costs: Number(s.costs.toFixed(2)),
