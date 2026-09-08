@@ -112,7 +112,7 @@ function quadObDetail(stack: QuadStochStack, end: number, lookback: number): str
   return `No quad OB in last ${lookback} bars — now: ${quadDetail(stack, end)}`;
 }
 
-function evaluateK1LongSteps(
+export function evaluateK1LongSteps(
   candlesExec: LighterCandle[],
   ctx: KuriskoDualTfContext,
   i: number,
@@ -236,7 +236,7 @@ function evaluateK1LongSteps(
   return steps;
 }
 
-function evaluateK1ShortSteps(
+export function evaluateK1ShortSteps(
   candlesExec: LighterCandle[],
   ctx: KuriskoDualTfContext,
   i: number,
@@ -360,7 +360,7 @@ function evaluateK1ShortSteps(
   return steps;
 }
 
-function stepsSummary(steps: K1CriterionStep[], opts: K1DiagnoseOpts): { passCount: number; allPass: boolean } {
+export function stepsSummary(steps: K1CriterionStep[], opts: K1DiagnoseOpts): { passCount: number; allPass: boolean } {
   const requireVwap = opts.requireVwapConfluence ?? KURISKO_DEFAULT_REQUIRE_VWAP;
   const requireReversal = opts.requireReversalCandle ?? KURISKO_DEFAULT_REQUIRE_REVERSAL_CANDLE;
   const coreIds = new Set([
@@ -383,6 +383,22 @@ function stepsSummary(steps: K1CriterionStep[], opts: K1DiagnoseOpts): { passCou
   const relevant = steps.filter((s) => coreIds.has(s.id));
   const passCount = relevant.filter((s) => s.pass).length;
   return { passCount, allPass: passCount === relevant.length };
+}
+
+/** Evaluate one side on an execution bar (SIGNAL / allPass when every required step passes). */
+export function evaluateK1AtBar(
+  candlesExec: LighterCandle[],
+  ctx: KuriskoDualTfContext,
+  i: number,
+  side: "long" | "short",
+  opts: K1DiagnoseOpts = {}
+): { steps: K1CriterionStep[]; passCount: number; allPass: boolean } {
+  const steps =
+    side === "long"
+      ? evaluateK1LongSteps(candlesExec, ctx, i, opts)
+      : evaluateK1ShortSteps(candlesExec, ctx, i, opts);
+  const { passCount, allPass } = stepsSummary(steps, opts);
+  return { steps, passCount, allPass };
 }
 
 /** Gate counts across the window — explains 0-trade backtests. */
