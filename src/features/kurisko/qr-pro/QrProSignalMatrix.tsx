@@ -74,6 +74,28 @@ function MatrixCell({ row, scannedAt }: { row: KuriskoMatrixRow | null; scannedA
               DEPTH {depth}
             </span>
           ) : null}
+          {row.k2Signal ? (
+            <span className="rounded px-1.5 py-0.5 text-[8px] font-black bg-emerald-600/25 text-emerald-300">
+              K2
+            </span>
+          ) : row.k2Stage && row.k2Stage !== "WATCHING" ? (
+            <span className="rounded px-1.5 py-0.5 text-[8px] font-semibold text-emerald-500/80">
+              K2·{row.k2Stage}
+            </span>
+          ) : null}
+          {row.k3Signal ? (
+            <span className="rounded px-1.5 py-0.5 text-[8px] font-black bg-rose-600/25 text-rose-300">
+              K3
+            </span>
+          ) : row.k3MandatoryLongExit ? (
+            <span className="rounded px-1.5 py-0.5 text-[8px] font-black bg-amber-600/30 text-amber-200">
+              EXIT
+            </span>
+          ) : row.k3Stage && row.k3Stage !== "WATCHING" ? (
+            <span className="rounded px-1.5 py-0.5 text-[8px] font-semibold text-rose-400/80">
+              K3·{row.k3Stage}
+            </span>
+          ) : null}
         </div>
         <span className="shrink-0 text-[8px] text-slate-500">{timeAgo(ts)}</span>
       </div>

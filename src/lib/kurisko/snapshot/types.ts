@@ -1,7 +1,9 @@
 import type { K1CriterionStep } from "@/lib/kurisko/backtest/k1-diagnose";
+import type { KuriskoCriterionStep } from "@/lib/kurisko/backtest/criterion-step";
 import type { KuriskoChannelEpisodeDraw } from "@/lib/kurisko/backtest/chart-window-types";
+import type { KuriskoFlagStage } from "./k2-k3-stage";
 
-export type { KuriskoChannelEpisodeDraw };
+export type { KuriskoChannelEpisodeDraw, KuriskoFlagStage };
 
 /** QR Pro / Kurisko RAG setup stages. */
 export type KuriskoK1Stage = "WATCHING" | "ARM" | "STAGE1" | "DIV" | "CONFIRM" | "SIGNAL";
@@ -90,6 +92,30 @@ export interface KuriskoLevelsResponse {
   symbols: KuriskoSymbolLevels[];
 }
 
+/** Per-strategy diagnose card on the snapshot (K2 bull flag / K3 bear flag). */
+export interface KuriskoFlagDiagnose {
+  strategy: "k2_stoch_bull_flag" | "k3_bear_flag";
+  side: "long" | "short";
+  stage: KuriskoFlagStage;
+  passCount: number;
+  totalSteps: number;
+  allPass: boolean;
+  steps: KuriskoCriterionStep[];
+  /** K3 only — exit longs when macro + STOCH_A ≥ 80. */
+  mandatoryLongExit?: boolean;
+}
+
+/** Exit / visual cues derived from K2/K3 diagnose on the latest bar. */
+export interface KuriskoExitsVisual {
+  /** STOCH_A ≥ 80 under K2 context — take profit into strength. */
+  k2StochAExit: boolean;
+  /** K3 macro + A ≥ 80 — do not hold K1 longs. */
+  k3MandatoryLongExit: boolean;
+  /** K3 short SIGNAL ready. */
+  k3SellStrength: boolean;
+  stochA: number;
+}
+
 export interface KuriskoSnapshot {
   symbol: string;
   dataSource: "capital";
@@ -115,6 +141,11 @@ export interface KuriskoSnapshot {
   depthExec: KuriskoQuadDepths;
   depthStruct: KuriskoQuadDepths;
   steps: K1CriterionStep[];
+  /** K2 20/20 bull-flag diagnose (embedded 60,10 + 9,3 pullback). */
+  k2?: KuriskoFlagDiagnose;
+  /** K3 bear-flag / sell-strength diagnose. */
+  k3?: KuriskoFlagDiagnose;
+  exitsVisual?: KuriskoExitsVisual;
   scannedAt: number;
 }
 
@@ -172,6 +203,12 @@ export interface KuriskoMatrixRow {
   depths: KuriskoQuadDepths;
   barTs: number;
   price: number;
+  /** Compact K2/K3 stage hints for the scanner matrix. */
+  k2Stage?: KuriskoFlagStage;
+  k3Stage?: KuriskoFlagStage;
+  k2Signal?: boolean;
+  k3Signal?: boolean;
+  k3MandatoryLongExit?: boolean;
 }
 
 export interface KuriskoMatrix {

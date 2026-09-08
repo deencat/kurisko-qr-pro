@@ -187,3 +187,5 @@ What a retail trader usually does with “stochastics + channels,” and how thi
 ## Related: event backtest MVP
 
 Bar-by-bar K1 SIGNAL backtest (research-only): see **[K1_BACKTEST.md](./K1_BACKTEST.md)** (`npm run k1:test` / `npm run k1:backtest`). Implements stop / channel-mid TP / STOCH_A 80·20 / time-stop exits from the RAG; does **not** claim video win-rate figures.
+
+K2/K3 diagnose (embedded 60,10 + 9,3 flag / sell-strength): see **[K2_K3_DIAGNOSE.md](./K2_K3_DIAGNOSE.md)** (`npm run k2k3:test` / `npm run k2k3:smoke`).

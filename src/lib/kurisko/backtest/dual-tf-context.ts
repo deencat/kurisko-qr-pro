@@ -27,9 +27,14 @@ export interface KuriskoDualTfContext {
   stackStructKd: QuadStochKdStack;
   channel: ChannelLines;
   channelEpisodes: ChannelEpisode[];
+  /** Execution-TF EMAs (1m closes). */
   ema20: number[];
   ema50: number[];
   ema200: number[];
+  /** Structure-TF EMAs (5m closes) — K2 up-leg / K3 weakness gates. */
+  ema20Struct: number[];
+  ema50Struct: number[];
+  ema200Struct: number[];
   sessionVwap: number[];
   isNewDay: boolean[];
   structurePeriodMs: number;
@@ -49,6 +54,7 @@ export function buildDualTfContext(
     ? channelAtTimeFromEpisodes(channelEpisodes, candlesExec[candlesExec.length - 1]!.t)
     : buildChannelFromStructure(candlesStruct);
   const closes = candlesExec.map((c) => c.c);
+  const structCloses = candlesStruct.map((c) => c.c);
   const { sessionVwap, isNewDay } = buildSessionVwap(candlesExec);
   return {
     candlesStruct,
@@ -61,6 +67,9 @@ export function buildDualTfContext(
     ema20: emaSeries(closes, 20),
     ema50: emaSeries(closes, 50),
     ema200: emaSeries(closes, 200),
+    ema20Struct: emaSeries(structCloses, 20),
+    ema50Struct: emaSeries(structCloses, 50),
+    ema200Struct: emaSeries(structCloses, 200),
     sessionVwap,
     isNewDay,
     structurePeriodMs,
