@@ -131,9 +131,9 @@ const softMid = checkK1ExitOnBar(
 );
 assert(softMid.exit && softMid.reason === "stoch_a", "fast93 soft mid-50 exit");
 
-// --- tp2_rail: opposite rail after mid not hit ---
+// --- tp2_rail: opposite rail is the hard TP (mid skipped — no partials) ---
 const tp2Hit = checkK1ExitOnBar(
-  { ...posLong, targetPrice: 110 }, // mid not reachable this bar
+  posLong,
   11,
   { t: 1, o: 100, h: 104.2, l: 99.8, c: 103.5 },
   40,
@@ -143,16 +143,27 @@ const tp2Hit = checkK1ExitOnBar(
 assert(tp2Hit.exit && tp2Hit.reason === "tp_rail", "tp2_rail opposite rail");
 assert(tp2Hit.exit && tp2Hit.price === 104, "tp2 fill at rail");
 
-// --- tp2_rail: mid still before rail ---
-const midBeforeRail = checkK1ExitOnBar(
+// --- tp2_rail: price through mid but not rail → hold (mid not an exit) ---
+const skipMid = checkK1ExitOnBar(
   posLong,
   11,
-  { t: 1, o: 100, h: 104.5, l: 99.5, c: 103 },
+  { t: 1, o: 100, h: 102.5, l: 99.5, c: 102.1 },
   40,
   35,
   { exitMode: "tp2_rail", oppositeRailPrice: 104 }
 );
-assert(midBeforeRail.exit && midBeforeRail.reason === "tp_mid", "tp2_rail mid before rail");
+assert(!skipMid.exit, "tp2_rail does not exit at mid");
+
+// --- fast93_tp2: stoch before rail ---
+const f93tp2 = checkK1ExitOnBar(
+  posLong,
+  11,
+  { t: 1, o: 100, h: 104.5, l: 99.5, c: 103 },
+  82,
+  70,
+  { exitMode: "fast93_tp2", oppositeRailPrice: 104 }
+);
+assert(f93tp2.exit && f93tp2.reason === "stoch_a", "fast93_tp2 prefers stoch over rail");
 
 // --- parse modes ---
 assert(parseK1ExitMode("fast93_tp2") === "fast93_tp2", "parse fast93_tp2");

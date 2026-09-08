@@ -6,8 +6,12 @@
  * Exit modes (see docs/K1_BACKTEST.md):
  * - mvp:        stop → TP mid → STOCH_A cross 80/20 → time
  * - fast93:     stop → STOCH_A into strength (cross OR already OB/OS) → TP mid → time
- * - tp2_rail:   stop → TP mid → opposite-rail TP2 → STOCH_A → time
- * - fast93_tp2: stop → STOCH_A → TP mid → opposite-rail TP2 → time
+ * - tp2_rail:   stop → opposite-rail TP2 (skip mid; no partials) → STOCH_A → time
+ * - fast93_tp2: stop → STOCH_A → opposite-rail TP2 (skip mid) → time
+ *
+ * Note: without scale-out partials, mid always sits between entry and the opposite
+ * rail, so a mid-then-rail priority never realizes TP2. Rail modes therefore
+ * *replace* mid with the opposite rail as the hard TP.
  */
 import {
   KURISKO_DEFAULT_STOP_BUFFER_PCT,
@@ -244,16 +248,31 @@ export function checkK1ExitOnBar(
   const stop = checkStop(pos, bar);
   if (stop) return stop;
 
+  const railOrMidFallback = (): K1ExitHit | null => {
+    const railHit = checkTpRail(pos, bar, opts.oppositeRailPrice);
+    if (railHit) return railHit;
+    const hasRail =
+      (opts.oppositeRailPrice != null && opts.oppositeRailPrice > 0) ||
+      (pos.tp2Price != null && pos.tp2Price > 0);
+    // Only fall back to mid when no opposite rail is configured.
+    return hasRail ? null : checkTpMid(pos, bar);
+  };
+
+  // Without partials: rail modes replace mid with opposite-rail TP (RAG TP2).
+  // Fall back to mid only when live/locked rail is unavailable.
   const order: Array<() => K1ExitHit | null> = wantsFast93(mode)
-    ? [
-        () => checkStoch(pos, bar, stochA, stochAPrev, ob, os, mode, { midExit, mid }),
-        () => checkTpMid(pos, bar),
-        () => (wantsTp2(mode) ? checkTpRail(pos, bar, opts.oppositeRailPrice) : null),
-      ]
+    ? wantsTp2(mode)
+      ? [
+          () => checkStoch(pos, bar, stochA, stochAPrev, ob, os, mode, { midExit, mid }),
+          railOrMidFallback,
+        ]
+      : [
+          () => checkStoch(pos, bar, stochA, stochAPrev, ob, os, mode, { midExit, mid }),
+          () => checkTpMid(pos, bar),
+        ]
     : wantsTp2(mode)
       ? [
-          () => checkTpMid(pos, bar),
-          () => checkTpRail(pos, bar, opts.oppositeRailPrice),
+          railOrMidFallback,
           () => checkStoch(pos, bar, stochA, stochAPrev, ob, os, mode, { midExit, mid }),
         ]
       : [
