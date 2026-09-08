@@ -2,15 +2,18 @@ import "server-only";
 
 import { loadAzizMarketData } from "@/lib/aziz/improvement/market-data";
 import { diagnoseK1LatestBar } from "@/lib/kurisko/backtest/k1-diagnose";
+import { diagnoseK2LatestBar } from "@/lib/kurisko/backtest/k2-diagnose";
+import { diagnoseK3LatestBar } from "@/lib/kurisko/backtest/k3-diagnose";
 import { buildDualTfContext, channelAtTime, structureIndexAt } from "@/lib/kurisko/backtest/dual-tf-context";
 import { channelValidK1 } from "@/lib/kurisko/indicators/channel-geometry";
 import { episodesForChart } from "@/lib/kurisko/indicators/channel-episodes";
-import { KURISKO_STOCH_PARAMS } from "@/lib/kurisko/constants";
+import { KURISKO_STOCH_PARAMS, KURISKO_STOCH_THRESH_OVERBOUGHT } from "@/lib/kurisko/constants";
 import {
   getKuriskoTimeframePair,
   kuriskoStructurePeriodMs,
 } from "@/lib/kurisko/timeframes";
 import { resolveK1Stage } from "./k1-stage";
+import { resolveK2Stage, resolveK3Stage } from "./k2-k3-stage";
 import { computeQuadDepths } from "./quad-depth";
 import { computeVortexFlux } from "./vortex-flux";
 import type { KuriskoChartCandle, KuriskoQuadValues, KuriskoSnapshot } from "./types";
@@ -52,6 +55,8 @@ export async function buildKuriskoSnapshot(params: BuildKuriskoSnapshotParams): 
   }
 
   const latest = diagnoseK1LatestBar(candles, structurePeriodMs);
+  const k2Latest = diagnoseK2LatestBar(candles, structurePeriodMs);
+  const k3Latest = diagnoseK3LatestBar(candles, structurePeriodMs);
   const ctx = buildDualTfContext(candles, structurePeriodMs);
   const i = candles.length - 1;
   const bar = candles[i]!;
@@ -113,6 +118,13 @@ export async function buildKuriskoSnapshot(params: BuildKuriskoSnapshotParams): 
       }
     : null;
 
+  const k2Stage = resolveK2Stage(k2Latest.steps, k2Latest.allPass);
+  const k3Stage = resolveK3Stage(k3Latest.steps, k3Latest.allPass);
+  const stochA = quadExec.A;
+  const k2Env =
+    (k2Latest.steps.find((s) => s.id === "k2_e1_up_env")?.pass ?? false) &&
+    (k2Latest.steps.find((s) => s.id === "k2_e2_embedded_bull")?.pass ?? false);
+
   return {
     symbol,
     dataSource: "capital",
@@ -137,6 +149,31 @@ export async function buildKuriskoSnapshot(params: BuildKuriskoSnapshotParams): 
     depthExec,
     depthStruct,
     steps,
+    k2: {
+      strategy: "k2_stoch_bull_flag",
+      side: "long",
+      stage: k2Stage,
+      passCount: k2Latest.passCount,
+      totalSteps: k2Latest.steps.length,
+      allPass: k2Latest.allPass,
+      steps: k2Latest.steps,
+    },
+    k3: {
+      strategy: "k3_bear_flag",
+      side: "short",
+      stage: k3Stage,
+      passCount: k3Latest.passCount,
+      totalSteps: k3Latest.steps.length,
+      allPass: k3Latest.allPass,
+      steps: k3Latest.steps,
+      mandatoryLongExit: k3Latest.mandatoryLongExit,
+    },
+    exitsVisual: {
+      k2StochAExit: k2Env && stochA >= KURISKO_STOCH_THRESH_OVERBOUGHT,
+      k3MandatoryLongExit: k3Latest.mandatoryLongExit,
+      k3SellStrength: k3Latest.allPass,
+      stochA,
+    },
     scannedAt: Date.now(),
   };
 }

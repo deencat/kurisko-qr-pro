@@ -27,8 +27,14 @@ interface CapitalSession {
 let cached: CapitalSession | null = null;
 const SESSION_TTL_MS = 9 * 60 * 1000;
 
-/** Default page budget — deep enough for ~months of 1m when demo allows. */
-export const DEFAULT_MAX_PAGES = 200;
+/**
+ * Default page budget — ~12m of 1m bars when demo allows (~500×1000).
+ * Raise further (800–1200) to probe deeper Capital history; cache under data/kurisko/capital/.
+ */
+export const DEFAULT_MAX_PAGES = 500;
+
+/** Suggested page budget when probing beyond ~12–18m of 1m history. */
+export const DEEP_MAX_PAGES = 1000;
 
 const DEFAULT_CACHE_DIR = path.join(process.cwd(), "data", "kurisko", "capital");
 

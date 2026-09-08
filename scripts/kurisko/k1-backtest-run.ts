@@ -5,7 +5,10 @@
  *   npm run k1:backtest -- --symbol US100 --days 3
  *   npm run k1:backtest -- --symbol GOLD --from 2026-09-01 --to 2026-09-03
  *   npm run k1:backtest -- --symbol US100 --days 365 --max-pages 500
+ *   npm run k1:backtest -- --symbol GOLD --days 540 --max-pages 1000 --exit-mode fast93
  *   npm run k1:backtest -- --fixture  # offline synthetic candles
+ *
+ * Exit modes: mvp | fast93 | tp2_rail | fast93_tp2  (see docs/K1_BACKTEST.md)
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -15,6 +18,7 @@ import {
   fetchCapital1mRange,
   isCapitalConfigured,
 } from "./capital-fetch";
+import { parseK1ExitMode } from "../../src/lib/kurisko/backtest/k1-entry-exit";
 import { runK1EventBacktest } from "../../src/lib/kurisko/backtest/k1-event-engine";
 import { diagnoseK1Funnel, type K1FunnelStats } from "../../src/lib/kurisko/backtest/k1-diagnose";
 import type { LighterCandle } from "../../src/lib/lighter/client";
@@ -60,6 +64,8 @@ async function main() {
   const maxPages = Number(arg("--max-pages") ?? String(DEFAULT_MAX_PAGES));
   const useCache = !has("--no-cache");
   const skipFunnel = has("--no-funnel");
+  const exitMode = parseK1ExitMode(arg("--exit-mode"));
+  const stochMidExit = has("--stoch-mid-exit");
   const endTs = toArg ? Date.parse(toArg) : Date.now();
   const startTs = fromArg ? Date.parse(fromArg) : endTs - dayMs(Number.isFinite(days) ? days : 2);
 
@@ -116,13 +122,15 @@ async function main() {
     console.log("Running diagnoseK1Funnel…");
     funnel = diagnoseK1Funnel(candles, 5 * 60_000);
   }
-  console.log("Running K1 event engine…");
+  console.log(`Running K1 event engine (exitMode=${exitMode}, stochMidExit=${stochMidExit})…`);
   const result = runK1EventBacktest(candles, {
     symbol: useFixture ? "SYNTH" : symbol,
     structurePeriodMs: 5 * 60_000,
     timeStopBars: 20,
     equity: 10_000,
     riskPct: 2,
+    exitMode,
+    stochMidExit,
   });
   const elapsedMs = Date.now() - t0;
 
@@ -133,6 +141,8 @@ async function main() {
       {
         source,
         ...fetchMeta,
+        exitMode,
+        stochMidExit,
         period: {
           from: candles[0] ? new Date(candles[0].t).toISOString() : null,
           to: candles.length ? new Date(candles[candles.length - 1]!.t).toISOString() : null,
@@ -199,6 +209,8 @@ async function main() {
       {
         source,
         fetchMeta,
+        exitMode,
+        stochMidExit,
         period: {
           from: candles[0] ? new Date(candles[0].t).toISOString() : null,
           to: candles.length ? new Date(candles[candles.length - 1]!.t).toISOString() : null,

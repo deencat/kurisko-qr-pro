@@ -3,9 +3,12 @@ import "server-only";
 import { loadAzizMarketData } from "@/lib/aziz/improvement/market-data";
 import type { LighterCandle } from "@/lib/lighter/client";
 import { diagnoseK1LatestBar } from "@/lib/kurisko/backtest/k1-diagnose";
+import { diagnoseK2LatestBar } from "@/lib/kurisko/backtest/k2-diagnose";
+import { diagnoseK3LatestBar } from "@/lib/kurisko/backtest/k3-diagnose";
 import { aggregateCandles } from "@/lib/kurisko/indicators/channel-geometry";
 import { buildQuadStochStack } from "@/lib/kurisko/indicators/stochastic-quad";
 import { resolveK1Stage } from "./k1-stage";
+import { resolveK2Stage, resolveK3Stage } from "./k2-k3-stage";
 import { computeQuadDepths } from "./quad-depth";
 import type { KuriskoMatrix, KuriskoMatrixRow, KuriskoQuadValues } from "./types";
 
@@ -63,6 +66,8 @@ export async function buildKuriskoMatrix(symbol: string): Promise<KuriskoMatrix>
     const bar = candles[i]!;
 
     const latest = diagnoseK1LatestBar(candles, periodMs);
+    const k2 = diagnoseK2LatestBar(candles, periodMs);
+    const k3 = diagnoseK3LatestBar(candles, periodMs);
     const side = latest.preferredSide;
     const steps = side === "short" ? latest.shortSteps : latest.longSteps;
     const depths = computeQuadDepths(quad, side);
@@ -77,6 +82,11 @@ export async function buildKuriskoMatrix(symbol: string): Promise<KuriskoMatrix>
       depths,
       barTs: bar.t,
       price: bar.c,
+      k2Stage: resolveK2Stage(k2.steps, k2.allPass),
+      k3Stage: resolveK3Stage(k3.steps, k3.allPass),
+      k2Signal: k2.allPass,
+      k3Signal: k3.allPass,
+      k3MandatoryLongExit: k3.mandatoryLongExit,
     });
   }
 

@@ -2,13 +2,25 @@ import type { K1CriterionStep } from "./k1-diagnose";
 
 export type K1Side = "long" | "short";
 
-export type K1ExitReason = "stop" | "tp_mid" | "stoch_a" | "time_stop" | "eod_flat";
+/** Research exit modes — see docs/K1_BACKTEST.md. Reusable by K2/K3 when ready. */
+export type K1ExitMode = "mvp" | "fast93" | "tp2_rail" | "fast93_tp2";
+
+export type K1ExitReason =
+  | "stop"
+  | "tp_mid"
+  | "tp_rail"
+  | "stoch_a"
+  | "time_stop"
+  | "eod_flat";
 
 export interface K1EntryLevels {
   side: K1Side;
   entryPrice: number;
   stopPrice: number;
+  /** TP1 — channel mid. */
   targetPrice: number;
+  /** Optional TP2 — opposite rail locked at entry. */
+  tp2Price?: number;
 }
 
 export interface K1OpenPosition extends K1EntryLevels {

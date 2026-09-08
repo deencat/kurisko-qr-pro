@@ -10,3 +10,13 @@ prisma/data/
 *.log
 .DS_Store
 scripts/dux/.venv/
+
+# Channel visual verifier outputs (regenerate with npm run k1:channel-visual)
+# Ignore contents but allow sample PNGs + README for PR review.
+artifacts/*
+!artifacts/kurisko/
+artifacts/kurisko/*
+!artifacts/kurisko/channels/
+artifacts/kurisko/channels/*
+!artifacts/kurisko/channels/*.png
+!artifacts/kurisko/channels/README.md

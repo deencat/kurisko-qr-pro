@@ -1,5 +1,6 @@
 /**
- * K1 event backtest MVP — walk 1m bars; enter on diagnoseK1 allPass; exit stop / TP mid / STOCH_A / time.
+ * K1 event backtest — walk 1m bars; enter on diagnoseK1 allPass;
+ * exit via configurable modes (mvp / fast93 / tp2_rail / fast93_tp2).
  * Research only — no live orders.
  */
 import type { LighterCandle } from "@/lib/lighter/client";
@@ -17,7 +18,7 @@ import {
   checkK1ExitOnBar,
 } from "./k1-entry-exit";
 import { summarizeK1Trades } from "./k1-metrics";
-import type { K1BacktestResult, K1OpenPosition, K1Side, K1Trade } from "./k1-types";
+import type { K1BacktestResult, K1ExitMode, K1OpenPosition, K1Side, K1Trade } from "./k1-types";
 
 export interface K1EventBacktestOpts extends K1DiagnoseOpts {
   symbol?: string;
@@ -31,6 +32,10 @@ export interface K1EventBacktestOpts extends K1DiagnoseOpts {
   preferLongOnTie?: boolean;
   /** Flat any open position on the last bar. Default true. */
   flattenEod?: boolean;
+  /** Exit mode (default mvp — prior ~1y baseline). */
+  exitMode?: K1ExitMode;
+  /** Soft mid (50) exit into 9,3 for fast93 modes. Default false. */
+  stochMidExit?: boolean;
 }
 
 const STRUCTURE_5M_MS = 5 * 60_000;
@@ -96,8 +101,14 @@ export function runK1EventBacktest(
     const stochAPrev = ctx.stackExec.A[i - 1] ?? stochA;
 
     if (open) {
+      const liveChannel = channelAtTime(ctx, c.t);
+      const oppositeRail =
+        open.side === "long" ? liveChannel.upperAt(c.t) : liveChannel.lowerAt(c.t);
       const hit = checkK1ExitOnBar(open, i, c, stochA, stochAPrev, {
         timeStopBars: opts.timeStopBars,
+        exitMode: opts.exitMode ?? "mvp",
+        oppositeRailPrice: liveChannel.valid ? oppositeRail : open.tp2Price,
+        stochMidExit: opts.stochMidExit,
       });
       if (hit.exit) {
         closePosition(i, hit.price, hit.reason);
@@ -127,12 +138,14 @@ export function runK1EventBacktest(
 
     const channel = channelAtTime(ctx, c.t);
     const prev = candlesExec[i - 1] ?? c;
+    const oppositeRail = side === "long" ? channel.upperAt(c.t) : channel.lowerAt(c.t);
     const levels = buildK1EntryLevels({
       side,
       entryPrice: c.c,
       swingLow: Math.min(prev.l, c.l),
       swingHigh: Math.max(prev.h, c.h),
       channelMid: channel.midAt(c.t),
+      oppositeRail: channel.valid ? oppositeRail : undefined,
       stopBufferPct,
     });
     if (!levels) continue;
