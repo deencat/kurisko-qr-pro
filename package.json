@@ -20,6 +20,7 @@
     "dux:ingest": "scripts/dux/.venv/bin/python scripts/dux/ingest_futu_history.py",
     "k1:test": "tsx scripts/kurisko/k1-backtest-selftest.ts",
     "k1:channel-test": "tsx scripts/kurisko/channel-geometry-selftest.ts",
+    "k1:channel-visual": "tsx --import ./scripts/kurisko/stub-server-only.mjs scripts/kurisko/channel-visual-verify.ts",
     "k1:backtest": "tsx --import ./scripts/kurisko/stub-server-only.mjs scripts/kurisko/k1-backtest-run.ts",
     "k1:smoke": "tsx --import ./scripts/kurisko/stub-server-only.mjs scripts/kurisko/k1-backtest-run.ts --fixture"
   },
