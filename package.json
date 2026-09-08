@@ -22,6 +22,7 @@
     "k1:channel-test": "tsx scripts/kurisko/channel-geometry-selftest.ts",
     "k1:channel-visual": "tsx --import ./scripts/kurisko/stub-server-only.mjs scripts/kurisko/channel-visual-verify.ts",
     "k1:backtest": "tsx --import ./scripts/kurisko/stub-server-only.mjs scripts/kurisko/k1-backtest-run.ts",
+    "k1:deep-fetch": "tsx --import ./scripts/kurisko/stub-server-only.mjs scripts/kurisko/capital-deep-fetch.ts",
     "k1:smoke": "tsx --import ./scripts/kurisko/stub-server-only.mjs scripts/kurisko/k1-backtest-run.ts --fixture",
     "k2k3:test": "tsx --import ./scripts/kurisko/stub-server-only.mjs scripts/kurisko/k2-k3-selftest.ts",
     "k2k3:diagnose": "tsx --import ./scripts/kurisko/stub-server-only.mjs scripts/kurisko/k2-k3-diagnose-run.ts",
