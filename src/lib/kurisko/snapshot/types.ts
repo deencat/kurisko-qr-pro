@@ -1,4 +1,7 @@
 import type { K1CriterionStep } from "@/lib/kurisko/backtest/k1-diagnose";
+import type { KuriskoChannelEpisodeDraw } from "@/lib/kurisko/backtest/chart-window-types";
+
+export type { KuriskoChannelEpisodeDraw };
 
 /** QR Pro / Kurisko RAG setup stages. */
 export type KuriskoK1Stage = "WATCHING" | "ARM" | "STAGE1" | "DIV" | "CONFIRM" | "SIGNAL";
@@ -98,6 +101,8 @@ export interface KuriskoSnapshot {
   channelDirection: "up" | "down" | "none";
   channelValid: boolean;
   keyLevels: KuriskoKeyLevels | null;
+  /** Sloping parallel-rail overlays for the chart window (empty if none). */
+  channelEpisodes?: KuriskoChannelEpisodeDraw[];
   chartBars: KuriskoChartCandle[];
   vortexFlux: KuriskoVortexFlux;
   marketContext: KuriskoMarketContext;

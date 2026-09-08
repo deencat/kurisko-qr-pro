@@ -6,37 +6,59 @@ Research-only bar-by-bar backtest for **K1 Quad Divergence** (Holy Grail). No li
 
 Period: **2025-09-07 → 2026-09-07** (~365 calendar days). Equity \$10k, risk 2%, cost 0.5 bps/side, time stop 20×1m. Capital demo 1m OHLC (synthetic volume). Epic map: `US100`/`NAS100`/`NQ` → Capital CFD **US100**.
 
+**Channel geometry P0** (reject inverted/crossed rails): GOLD + US100 re-run on the same cached window after the fix. US500 row is still the pre-fix baseline (not re-run here).
+
 | Symbol | Bars | Signals | Trades | Win% | PF | Net P&L | Max DD | Exits |
 |--------|------|---------|--------|------|----|---------|--------|-------|
-| US100 | 364 836 | 215 | 215 | 47.4% | 0.82 | −1 962.42 | 2 022.94 | 94 stop / 85 tp_mid / 33 stoch_a / 3 time_stop |
-| GOLD | 353 302 | 272 | 272 | 45.2% | 0.76 | −3 292.34 | 3 387.11 | 135 stop / 92 tp_mid / 41 stoch_a / 4 time_stop |
-| US500 | 361 797 | 61 | 61 | 49.2% | 1.00 | −302.15 | 468.55 | 21 stop / 25 tp_mid / 13 stoch_a / 2 time_stop |
+| US100 | 364 836 | 219 | 219 | 47.0% | 0.81 | −2 061.43 | 2 121.95 | 97 stop / 86 tp_mid / 33 stoch_a / 3 time_stop |
+| GOLD | 353 302 | 273 | 273 | 45.4% | 0.76 | −3 284.76 | 3 379.53 | 135 stop / 93 tp_mid / 41 stoch_a / 4 time_stop |
+| US500† | 361 797 | 61 | 61 | 49.2% | 1.00 | −302.15 | 468.55 | 21 stop / 25 tp_mid / 13 stoch_a / 2 time_stop |
+
+† Pre-channel-fix baseline (unchanged row).
+
+### Channel-fix delta (before → after, cached Capital)
+
+Same windows / cost model. Short smoke GOLD unchanged (see PR #3); longer tapes do move.
+
+| Window | Symbol | Trades | Win% | PF | Net P&L | Max DD |
+|--------|--------|--------|------|----|---------|--------|
+| ~12m | GOLD | 272 → **273** | 45.2 → **45.4** | 0.76 → **0.76** | −3 292.34 → **−3 284.76** | 3 387.11 → **3 379.53** |
+| ~12m | US100 | 215 → **219** | 47.4 → **47.0** | 0.82 → **0.81** | −1 962.42 → **−2 061.43** | 2 022.94 → **2 121.95** |
+| ~90d | GOLD | 56 → **56** | 50.0 → **50.0** | 0.91 → **0.91** | −394.20 → **−394.20** | 560.90 → **560.90** |
+| ~90d | US100 | 51 → **53** | 39.2 → **41.5** | 0.58 → **0.65** | −817.04 → **−713.79** | 927.45 → **839.46** |
+
+Read: inverted-rail rejection is a **correctness** gate, not an edge unlock. ~12m stays flat-to-negative (GOLD slightly less bad; US100 slightly more bad / more trades). ~90d US100 improves a bit on PF/DD but remains PF \< 1. GOLD ~90d identical.
 
 ### Funnel (stage counts over the ~12m window)
 
-| Stage | US100 | GOLD | US500 |
-|-------|-------|------|-------|
-| channelValidDown | 17 196 | 27 235 | 7 758 |
-| atLowerRail | 6 734 | 8 565 | 2 585 |
-| execQuadOs | 1 810 | 1 225 | 893 |
-| bullishDiv | 877 | 659 | 326 |
-| longSizingOk | 309 | 218 | 91 |
-| channelValidUp | 19 940 | 31 639 | 8 699 |
-| atUpperRail | 6 486 | 10 751 | 3 117 |
-| execQuadOb | 1 573 | 2 348 | 865 |
-| bearishDiv | 717 | 1 083 | 335 |
-| shortSizingOk | 191 | 376 | 45 |
+Post-fix for US100/GOLD; US500 still pre-fix.
+
+| Stage | US100 | GOLD | US500† |
+|-------|-------|------|--------|
+| channelValidDown | 17 055 | 27 067 | 7 758 |
+| atLowerRail | 6 595 | 8 426 | 2 585 |
+| execQuadOs | 1 829 | 1 217 | 893 |
+| bullishDiv | 895 | 662 | 326 |
+| longSizingOk | 317 | 219 | 91 |
+| channelValidUp | 19 656 | 31 496 | 8 699 |
+| atUpperRail | 6 306 | 10 637 | 3 117 |
+| execQuadOb | 1 541 | 2 347 | 865 |
+| bearishDiv | 708 | 1 085 | 335 |
+| shortSizingOk | 195 | 378 | 45 |
+
+`channelValid*` counts drop vs pre-fix (US100 −141/−284; GOLD −168/−143) as crossed rails are rejected; downstream sizing still feeds trades.
 
 ### Honest read
 
-- **Not a performance claim.** Over ~12 months all three symbols are flat-to-negative after costs; US100/GOLD PF \< 1, US500 PF ≈ 1.00 with costs (−305) wiping a tiny gross (+2.87).
-- US100 has a usable sample (215 trades) — still no edge under this MVP cost/pathing model.
+- **Not a performance claim.** Over ~12 months GOLD/US100 remain negative after costs (PF \< 1); US500 pre-fix PF ≈ 1.00 with costs (−305) wiping a tiny gross (+2.87).
+- Channel P0 does **not** create edge on these tapes — metrics move only slightly; short smoke was unchanged.
+- US100 ~12m sample n=219 — still no edge under this MVP cost/pathing model.
 - Signal density: US100 ~0.6/day, GOLD ~0.7/day, US500 ~0.17/day of 1m tape (strict K1 stays rare on the index).
 - Funnel remains alive on all three (rails → quad → div → sizing).
 
 ### Prior ~90d baseline (kept)
 
-Period: **2026-06-09 → 2026-09-07** (~90 calendar days).
+Period: **2026-06-09 → 2026-09-07** (~90 calendar days). Post-fix GOLD unchanged; US100 after-fix shown in delta table above (53 / 41.5% / 0.65 / −713.79 / 839.46 on 91 094 bars).
 
 | Symbol | Bars | Signals | Trades | Win% | PF | Net P&L | Max DD | Exits |
 |--------|------|---------|--------|------|----|---------|--------|-------|

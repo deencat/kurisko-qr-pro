@@ -76,10 +76,10 @@ function structBarIndex(candlesStruct: LighterCandle[], ts: number): number {
 function channelFitsCandle(channel: ChannelLines, candle: LighterCandle): boolean {
   const upper = channel.upperAt(candle.t);
   const lower = channel.lowerAt(candle.t);
-  const hiRail = Math.max(upper, lower);
-  const loRail = Math.min(upper, lower);
-  const width = hiRail - loRail;
-  const mid = (hiRail + loRail) / 2;
+  // Do not mask inverted rails with min/max — reject crossed geometry.
+  if (!(lower < upper)) return false;
+  const width = upper - lower;
+  const mid = (upper + lower) / 2;
   if (!Number.isFinite(width) || !Number.isFinite(mid) || width <= 0 || mid <= 0) return false;
 
   const widthPct = width / mid;
@@ -89,7 +89,7 @@ function channelFitsCandle(channel: ChannelLines, candle: LighterCandle): boolea
   const tolerance = width * 0.75;
   const bh = bodyHigh(candle);
   const bl = bodyLow(candle);
-  return bh >= loRail - tolerance && bl <= hiRail + tolerance;
+  return bh >= lower - tolerance && bl <= upper + tolerance;
 }
 
 /**
