@@ -1,13 +1,20 @@
 /**
- * K1 entry level construction + bar-by-bar exit checks (RAG: stop, TP mid, STOCH_A 80/20, time stop).
+ * K1 entry level construction + bar-by-bar exit checks (RAG / video).
  * Pure helpers — unit-testable without Capital or dual-TF context.
+ * K2/K3 engines can reuse the same exit modes when ready.
+ *
+ * Exit modes (see docs/K1_BACKTEST.md):
+ * - mvp:        stop → TP mid → STOCH_A cross 80/20 → time
+ * - fast93:     stop → STOCH_A into strength (cross OR already OB/OS) → TP mid → time
+ * - tp2_rail:   stop → TP mid → opposite-rail TP2 → STOCH_A → time
+ * - fast93_tp2: stop → STOCH_A → TP mid → opposite-rail TP2 → time
  */
 import {
   KURISKO_DEFAULT_STOP_BUFFER_PCT,
   KURISKO_STOCH_THRESH_OVERBOUGHT,
   KURISKO_STOCH_THRESH_OVERSOLD,
 } from "../constants";
-import type { K1EntryLevels, K1ExitReason, K1OpenPosition, K1Side } from "./k1-types";
+import type { K1EntryLevels, K1ExitMode, K1ExitReason, K1OpenPosition, K1Side } from "./k1-types";
 
 export interface K1BarOHLC {
   t: number;
@@ -22,6 +29,21 @@ export interface K1ExitCheckOpts {
   timeStopBars?: number;
   stochOb?: number;
   stochOs?: number;
+  /** Exit mode — default mvp (prior ~1y baseline). */
+  exitMode?: K1ExitMode;
+  /**
+   * Live (or locked) opposite-rail price for optional TP2.
+   * Long → channel upper; short → channel lower.
+   */
+  oppositeRailPrice?: number;
+  /**
+   * Soft mid exit into 9,3 (video: sometimes only to 50 in weak markets).
+   * When true, long exits on cross up through stochMid; short on cross down.
+   * Only applies in fast93 / fast93_tp2.
+   */
+  stochMidExit?: boolean;
+  /** Soft mid threshold (default 50). */
+  stochMid?: number;
 }
 
 export interface K1ExitHit {
@@ -36,13 +58,28 @@ export interface K1ExitHold {
 
 export type K1ExitCheck = K1ExitHit | K1ExitHold;
 
-/** Long: stop under swing low; short: stop above swing high. Target = channel mid. */
+export const K1_EXIT_MODES: readonly K1ExitMode[] = [
+  "mvp",
+  "fast93",
+  "tp2_rail",
+  "fast93_tp2",
+] as const;
+
+export function parseK1ExitMode(raw: string | undefined): K1ExitMode {
+  const v = (raw ?? "mvp").trim().toLowerCase();
+  if ((K1_EXIT_MODES as readonly string[]).includes(v)) return v as K1ExitMode;
+  throw new Error(`Unknown --exit-mode ${raw}. Use: ${K1_EXIT_MODES.join(" | ")}`);
+}
+
+/** Long: stop under swing low; short: stop above swing high. Target = channel mid (TP1). */
 export function buildK1EntryLevels(params: {
   side: K1Side;
   entryPrice: number;
   swingLow: number;
   swingHigh: number;
   channelMid: number;
+  /** Opposite rail at entry (optional TP2 lock). */
+  oppositeRail?: number;
   stopBufferPct?: number;
 }): K1EntryLevels | null {
   const buf = params.stopBufferPct ?? KURISKO_DEFAULT_STOP_BUFFER_PCT;
@@ -52,20 +89,144 @@ export function buildK1EntryLevels(params: {
   if (params.side === "long") {
     const stop = params.swingLow * (1 - buf);
     if (!(stop < entry) || !(params.channelMid > entry)) return null;
-    return { side: "long", entryPrice: entry, stopPrice: stop, targetPrice: params.channelMid };
+    const tp2 =
+      params.oppositeRail != null && params.oppositeRail > params.channelMid
+        ? params.oppositeRail
+        : undefined;
+    return {
+      side: "long",
+      entryPrice: entry,
+      stopPrice: stop,
+      targetPrice: params.channelMid,
+      tp2Price: tp2,
+    };
   }
 
   const stop = params.swingHigh * (1 + buf);
   if (!(stop > entry) || !(params.channelMid < entry)) return null;
-  return { side: "short", entryPrice: entry, stopPrice: stop, targetPrice: params.channelMid };
+  const tp2 =
+    params.oppositeRail != null && params.oppositeRail < params.channelMid
+      ? params.oppositeRail
+      : undefined;
+  return {
+    side: "short",
+    entryPrice: entry,
+    stopPrice: stop,
+    targetPrice: params.channelMid,
+    tp2Price: tp2,
+  };
+}
+
+function wantsFast93(mode: K1ExitMode): boolean {
+  return mode === "fast93" || mode === "fast93_tp2";
+}
+
+function wantsTp2(mode: K1ExitMode): boolean {
+  return mode === "tp2_rail" || mode === "fast93_tp2";
+}
+
+/** Long: sell into strength when 9,3 rotates up through OB (or already OB). */
+function longStochExit(
+  stochA: number,
+  stochAPrev: number,
+  ob: number,
+  opts: { midExit: boolean; mid: number }
+): boolean {
+  if (stochAPrev < ob && stochA >= ob) return true;
+  // Fast 9,3 fidelity: already OB → mandatory exit (K3 long-scalp rule / video)
+  if (stochA >= ob) return true;
+  if (opts.midExit && stochAPrev < opts.mid && stochA >= opts.mid) return true;
+  return false;
+}
+
+function shortStochExit(
+  stochA: number,
+  stochAPrev: number,
+  os: number,
+  opts: { midExit: boolean; mid: number }
+): boolean {
+  if (stochAPrev > os && stochA <= os) return true;
+  if (stochA <= os) return true;
+  if (opts.midExit && stochAPrev > opts.mid && stochA <= opts.mid) return true;
+  return false;
+}
+
+function checkStop(
+  pos: Pick<K1OpenPosition, "side" | "stopPrice">,
+  bar: K1BarOHLC
+): K1ExitHit | null {
+  if (pos.side === "long" && bar.l <= pos.stopPrice) {
+    return { exit: true, reason: "stop", price: pos.stopPrice };
+  }
+  if (pos.side === "short" && bar.h >= pos.stopPrice) {
+    return { exit: true, reason: "stop", price: pos.stopPrice };
+  }
+  return null;
+}
+
+function checkTpMid(
+  pos: Pick<K1OpenPosition, "side" | "targetPrice">,
+  bar: K1BarOHLC
+): K1ExitHit | null {
+  if (pos.side === "long" && bar.h >= pos.targetPrice) {
+    return { exit: true, reason: "tp_mid", price: pos.targetPrice };
+  }
+  if (pos.side === "short" && bar.l <= pos.targetPrice) {
+    return { exit: true, reason: "tp_mid", price: pos.targetPrice };
+  }
+  return null;
+}
+
+function checkTpRail(
+  pos: Pick<K1OpenPosition, "side" | "tp2Price">,
+  bar: K1BarOHLC,
+  liveRail: number | undefined
+): K1ExitHit | null {
+  const rail = liveRail ?? pos.tp2Price;
+  if (rail == null || !(rail > 0)) return null;
+  if (pos.side === "long" && bar.h >= rail) {
+    return { exit: true, reason: "tp_rail", price: rail };
+  }
+  if (pos.side === "short" && bar.l <= rail) {
+    return { exit: true, reason: "tp_rail", price: rail };
+  }
+  return null;
+}
+
+function checkStoch(
+  pos: Pick<K1OpenPosition, "side">,
+  bar: K1BarOHLC,
+  stochA: number,
+  stochAPrev: number,
+  ob: number,
+  os: number,
+  mode: K1ExitMode,
+  opts: { midExit: boolean; mid: number }
+): K1ExitHit | null {
+  const midOpts = {
+    midExit: opts.midExit && wantsFast93(mode),
+    mid: opts.mid,
+  };
+  if (pos.side === "long") {
+    const hit = wantsFast93(mode)
+      ? longStochExit(stochA, stochAPrev, ob, midOpts)
+      : stochAPrev < ob && stochA >= ob;
+    if (hit) return { exit: true, reason: "stoch_a", price: bar.c };
+  } else {
+    const hit = wantsFast93(mode)
+      ? shortStochExit(stochA, stochAPrev, os, midOpts)
+      : stochAPrev > os && stochA <= os;
+    if (hit) return { exit: true, reason: "stoch_a", price: bar.c };
+  }
+  return null;
 }
 
 /**
- * Intrabar exit priority: stop → TP (channel mid) → STOCH_A cross → time stop.
- * Stop/TP use optimistic fill at level when both could print in the same bar.
+ * Intrabar exit priority depends on exitMode.
+ * Stop always first. Same-bar fill uses level price for stop/TP.
  */
 export function checkK1ExitOnBar(
-  pos: Pick<K1OpenPosition, "side" | "entryBar" | "stopPrice" | "targetPrice">,
+  pos: Pick<K1OpenPosition, "side" | "entryBar" | "stopPrice" | "targetPrice" | "tp2Price">,
   barIndex: number,
   bar: K1BarOHLC,
   stochA: number,
@@ -75,28 +236,34 @@ export function checkK1ExitOnBar(
   const timeStopBars = opts.timeStopBars ?? 20;
   const ob = opts.stochOb ?? KURISKO_STOCH_THRESH_OVERBOUGHT;
   const os = opts.stochOs ?? KURISKO_STOCH_THRESH_OVERSOLD;
+  const mode = opts.exitMode ?? "mvp";
   const held = barIndex - pos.entryBar;
+  const midExit = opts.stochMidExit ?? false;
+  const mid = opts.stochMid ?? 50;
 
-  if (pos.side === "long") {
-    if (bar.l <= pos.stopPrice) {
-      return { exit: true, reason: "stop", price: pos.stopPrice };
-    }
-    if (bar.h >= pos.targetPrice) {
-      return { exit: true, reason: "tp_mid", price: pos.targetPrice };
-    }
-    if (stochAPrev < ob && stochA >= ob) {
-      return { exit: true, reason: "stoch_a", price: bar.c };
-    }
-  } else {
-    if (bar.h >= pos.stopPrice) {
-      return { exit: true, reason: "stop", price: pos.stopPrice };
-    }
-    if (bar.l <= pos.targetPrice) {
-      return { exit: true, reason: "tp_mid", price: pos.targetPrice };
-    }
-    if (stochAPrev > os && stochA <= os) {
-      return { exit: true, reason: "stoch_a", price: bar.c };
-    }
+  const stop = checkStop(pos, bar);
+  if (stop) return stop;
+
+  const order: Array<() => K1ExitHit | null> = wantsFast93(mode)
+    ? [
+        () => checkStoch(pos, bar, stochA, stochAPrev, ob, os, mode, { midExit, mid }),
+        () => checkTpMid(pos, bar),
+        () => (wantsTp2(mode) ? checkTpRail(pos, bar, opts.oppositeRailPrice) : null),
+      ]
+    : wantsTp2(mode)
+      ? [
+          () => checkTpMid(pos, bar),
+          () => checkTpRail(pos, bar, opts.oppositeRailPrice),
+          () => checkStoch(pos, bar, stochA, stochAPrev, ob, os, mode, { midExit, mid }),
+        ]
+      : [
+          () => checkTpMid(pos, bar),
+          () => checkStoch(pos, bar, stochA, stochAPrev, ob, os, mode, { midExit, mid }),
+        ];
+
+  for (const step of order) {
+    const hit = step();
+    if (hit) return hit;
   }
 
   if (held >= timeStopBars) {
